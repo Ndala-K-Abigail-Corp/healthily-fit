@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { GenderEnum } from "@healthily-fit/shared";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { Label } from "@/components/ui/label";
 
 const PersonalInfoSchema = z.object({
   age: z.number().int().min(13, "Must be at least 13 years old").max(120),
+  gender: GenderEnum,
   heightCm: z.number().min(50, "Height must be at least 50 cm").max(300),
   weightKg: z.number().min(20, "Weight must be at least 20 kg").max(500),
 });
@@ -57,6 +59,27 @@ export function StepPersonalInfo({
           />
           {errors.age && (
             <p className="text-sm text-error">{errors.age.message}</p>
+          )}
+        </div>
+
+        {/* Gender */}
+        <div className="space-y-2">
+          <Label htmlFor="gender">Gender *</Label>
+          <select
+            id="gender"
+            className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            {...register("gender")}
+          >
+            {GenderEnum.options.map((option) => (
+              <option key={option} value={option}>
+                {option === "prefer_not_to_say"
+                  ? "Prefer not to say"
+                  : option.charAt(0).toUpperCase() + option.slice(1)}
+              </option>
+            ))}
+          </select>
+          {errors.gender && (
+            <p className="text-sm text-error">{errors.gender.message}</p>
           )}
         </div>
 

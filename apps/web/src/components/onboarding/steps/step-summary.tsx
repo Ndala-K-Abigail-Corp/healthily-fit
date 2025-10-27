@@ -47,6 +47,17 @@ export function StepSummary({
                 <p className="font-medium">{data.age} years</p>
               </div>
               <div>
+                <p className="text-sm text-neutral-600">Gender</p>
+                <p className="font-medium">
+                  {data.gender === "prefer_not_to_say"
+                    ? "Prefer not to say"
+                    : data.gender
+                    ? data.gender.charAt(0).toUpperCase() +
+                      data.gender.slice(1)
+                    : "Not specified"}
+                </p>
+              </div>
+              <div>
                 <p className="text-sm text-neutral-600">Height</p>
                 <p className="font-medium">{data.heightCm} cm</p>
               </div>

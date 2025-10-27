@@ -5,6 +5,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/auth-context";
 import { OnboardingProvider } from "./context/onboarding-context";
 import { ProfileProvider } from "./context/profile-context";
+import { WorkoutProvider } from "./context/workout-context";
 import { LandingPage } from "./pages/landing";
 import { LoginPage } from "./pages/login";
 import { OnboardingPage } from "./pages/onboarding";
@@ -83,9 +84,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
       <ProfileProvider>
-        <OnboardingProvider>
-          <App />
-        </OnboardingProvider>
+        <WorkoutProvider>
+          <OnboardingProvider>
+            <App />
+          </OnboardingProvider>
+        </WorkoutProvider>
       </ProfileProvider>
     </AuthProvider>
   </React.StrictMode>

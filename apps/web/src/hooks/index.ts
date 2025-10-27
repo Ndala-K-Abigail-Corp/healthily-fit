@@ -10,4 +10,5 @@ export { useOnboarding } from "./use-onboarding";
 export { useNavbar } from "./use-navbar";
 export { useScrollAnimation } from "./use-scroll-animation";
 export { usePersonalization } from "./use-personalization";
+export { useWorkout } from "./use-workout";
 

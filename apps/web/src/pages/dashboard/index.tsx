@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Activity, BarChart3, Calendar, Flame, LineChart, Plus, Target, TrendingUp } from "lucide-react";
 
 import { calculateBMI, getBMICategory } from "@healthily-fit/shared";
@@ -10,13 +11,18 @@ import {
   QuickActions,
   RecentActivity,
   StatsCard,
+  WorkoutPlanCard,
+  WorkoutGeneratorDialog,
 } from "@/components/dashboard";
 import { useAuthContext } from "@/context/auth-context";
 import { useProfileContext } from "@/context/profile-context";
+import { useWorkoutContext } from "@/context/workout-context";
 
 export function DashboardPage() {
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
+  const { activePlan } = useWorkoutContext();
+  const [showGeneratorDialog, setShowGeneratorDialog] = useState(false);
 
   // Profile should exist due to ProtectedRoute, but handle edge case
   if (!profile) {
@@ -78,34 +84,45 @@ export function DashboardPage() {
 
         {/* Quick Actions */}
         <div className="animate-slideUp [animation-delay:50ms]">
-          <QuickActions />
+          <QuickActions onGenerateWorkout={() => setShowGeneratorDialog(true)} />
         </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
           {/* Active Workout Plan */}
-          <Card className="animate-slideUp [animation-delay:100ms]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-sm">
-                <Calendar className="w-5 h-5 text-primary" />
-                Active Workout Plan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-xl space-y-md">
-                <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                  <Plus className="w-8 h-8 text-primary" />
-                </div>
-                <div>
-                  <p className="font-semibold text-lg">No active workout plan</p>
-                  <p className="text-sm text-neutral-600 mt-sm">
-                    Generate your personalized plan to get started
-                  </p>
-                </div>
-                <Button className="mt-md">Generate Workout Plan</Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="animate-slideUp [animation-delay:100ms]">
+            {activePlan ? (
+              <WorkoutPlanCard plan={activePlan} />
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-sm">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    Active Workout Plan
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-xl space-y-md">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                      <Plus className="w-8 h-8 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg">No active workout plan</p>
+                      <p className="text-sm text-neutral-600 mt-sm">
+                        Generate your personalized plan to get started
+                      </p>
+                    </div>
+                    <Button
+                      className="mt-md"
+                      onClick={() => setShowGeneratorDialog(true)}
+                    >
+                      Generate Workout Plan
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
           {/* Recent Activity */}
           <div className="animate-slideUp [animation-delay:200ms]">
@@ -244,6 +261,15 @@ export function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Workout Generator Dialog */}
+      <WorkoutGeneratorDialog
+        isOpen={showGeneratorDialog}
+        onClose={() => setShowGeneratorDialog(false)}
+        onSuccess={() => {
+          // Dialog will close automatically
+        }}
+      />
     </DashboardLayout>
   );
 }
