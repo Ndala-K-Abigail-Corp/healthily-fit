@@ -2,32 +2,21 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import { useAuth } from "./hooks/use-auth";
-import { DashboardPage } from "./pages/dashboard";
+import { AuthProvider } from "./context/auth-context";
+import { OnboardingProvider } from "./context/onboarding-context";
+import { ProfileProvider } from "./context/profile-context";
 import { LandingPage } from "./pages/landing";
 import { LoginPage } from "./pages/login";
 import { OnboardingPage } from "./pages/onboarding";
 import { SignupPage } from "./pages/signup";
+import { DashboardPage } from "./pages/dashboard";
+import { ProfilePage } from "./pages/dashboard/profile";
+import { ProgressPage } from "./pages/dashboard/progress";
+import { SettingsPage } from "./pages/dashboard/settings";
+import { WorkoutsPage } from "./pages/dashboard/workouts";
+import { OnboardingRoute } from "./routes/onboarding-route";
+import { ProtectedRoute } from "./routes/protected-route";
 import "./styles/globals.css";
-
-// Protected Route Component
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { loading, user } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth/login" replace />;
-  }
-
-  return <>{children}</>;
-}
 
 function App() {
   return (
@@ -39,9 +28,9 @@ function App() {
         <Route
           path="/onboarding"
           element={
-            <ProtectedRoute>
+            <OnboardingRoute>
               <OnboardingPage />
-            </ProtectedRoute>
+            </OnboardingRoute>
           }
         />
         <Route
@@ -49,6 +38,38 @@ function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/workouts"
+          element={
+            <ProtectedRoute>
+              <WorkoutsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/progress"
+          element={
+            <ProtectedRoute>
+              <ProgressPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />
@@ -60,7 +81,13 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <AuthProvider>
+      <ProfileProvider>
+        <OnboardingProvider>
+          <App />
+        </OnboardingProvider>
+      </ProfileProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

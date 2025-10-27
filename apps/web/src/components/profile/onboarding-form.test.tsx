@@ -1,49 +1,60 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 
-import { OnboardingForm } from "./onboarding-form";
+import { OnboardingForm } from "@/components/onboarding/onboarding-form";
+import { OnboardingProvider } from "@/context/onboarding-context";
 
-// Mock hooks
-vi.mock("@/hooks/use-profile", () => ({
-  useProfile: vi.fn(() => ({
+// Mock contexts
+vi.mock("@/context/profile-context", () => ({
+  useProfileContext: vi.fn(() => ({
     createProfile: vi.fn(),
+    error: null,
+    loading: false,
+    profile: null,
   })),
 }));
 
-describe("OnboardingForm", () => {
-  it("should render all required fields", () => {
-    render(<OnboardingForm />);
+// Helper to render with providers
+function renderWithProviders(component: React.ReactElement) {
+  return render(
+    <BrowserRouter>
+      <OnboardingProvider>{component}</OnboardingProvider>
+    </BrowserRouter>
+  );
+}
 
+describe("OnboardingForm", () => {
+  it("should render first step (personal info) by default", () => {
+    renderWithProviders(<OnboardingForm />);
+
+    expect(screen.getByText(/personal information/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/age/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/height.*cm/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^weight \(kg\)/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/dietary preference/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/fitness goal/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^weight.*kg/i)).toBeInTheDocument();
   });
 
-  it("should render health conditions checkboxes", () => {
-    render(<OnboardingForm />);
+  it("should render progress indicator", () => {
+    renderWithProviders(<OnboardingForm />);
 
-    expect(screen.getByText(/health conditions/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /none/i })).toBeInTheDocument();
+    expect(screen.getByText(/step 1 of 4/i)).toBeInTheDocument();
+    expect(screen.getByText(/personal info/i)).toBeInTheDocument();
+  });
+
+  it("should render next button on first step", () => {
+    renderWithProviders(<OnboardingForm />);
+
     expect(
-      screen.getByRole("button", { name: /diabetes/i })
+      screen.getByRole("button", { name: /next/i })
     ).toBeInTheDocument();
   });
 
-  it("should render submit button", () => {
-    render(<OnboardingForm />);
+  it("should not render back button on first step", () => {
+    renderWithProviders(<OnboardingForm />);
 
     expect(
-      screen.getByRole("button", { name: /complete profile/i })
-    ).toBeInTheDocument();
-  });
-
-  it("should show optional target weight field", () => {
-    render(<OnboardingForm />);
-
-    const targetWeightLabel = screen.getByLabelText(/target weight/i);
-    expect(targetWeightLabel).toBeInTheDocument();
+      screen.queryByRole("button", { name: /back/i })
+    ).not.toBeInTheDocument();
   });
 });
 

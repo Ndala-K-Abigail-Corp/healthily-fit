@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import React from "react";
 
 import { useAuth } from "./use-auth";
+import { AuthProvider } from "@/context/auth-context";
 
 // Mock Firebase Auth
 vi.mock("firebase/auth", () => ({
@@ -25,15 +27,19 @@ vi.mock("@/lib/firebase", () => ({
 }));
 
 describe("useAuth", () => {
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <AuthProvider>{children}</AuthProvider>
+  );
+
   it("should initialize with loading state", () => {
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     expect(result.current.user).toBeNull();
     expect(result.current.error).toBeNull();
   });
 
   it("should set loading to false after initialization", async () => {
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
@@ -41,7 +47,7 @@ describe("useAuth", () => {
   });
 
   it("should provide auth methods", () => {
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     expect(typeof result.current.signIn).toBe("function");
     expect(typeof result.current.signUp).toBe("function");
