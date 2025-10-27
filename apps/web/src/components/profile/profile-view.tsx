@@ -9,6 +9,7 @@ import {
   Ruler,
   Target,
   TrendingUp,
+  User,
   Weight,
 } from "lucide-react";
 
@@ -131,6 +132,19 @@ export function ProfileView({ profile }: ProfileViewProps) {
                   <p className="font-semibold">{profile.age} years</p>
                 </div>
               </div>
+              {profile.gender !== "prefer_not_to_say" && (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-neutral-600">Gender</p>
+                    <p className="font-semibold">
+                      {profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)}
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
                   <Ruler className="w-5 h-5 text-accent" />

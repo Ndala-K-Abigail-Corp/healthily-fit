@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { useState } from "react";
+>>>>>>> feature/dashboard
 import { Calendar, CheckCircle2, Clock, Edit2, Flame, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { WorkoutPlan } from "@healthily-fit/shared";
@@ -9,6 +13,11 @@ import {
   getCurrentWeekWorkouts,
   formatDayOfWeek,
 } from "@/lib/workout-utils";
+<<<<<<< HEAD
+=======
+import { useActivityContext } from "@/context/activity-context";
+import { WeightUpdateDialog } from "./weight-update-dialog";
+>>>>>>> feature/dashboard
 
 interface WorkoutPlanCardProps {
   plan: WorkoutPlan;
@@ -18,6 +27,19 @@ interface WorkoutPlanCardProps {
 export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
   const progress = calculatePlanProgress(plan);
   const currentWeekWorkouts = getCurrentWeekWorkouts(plan);
+<<<<<<< HEAD
+=======
+  const { logWorkoutCompletion, isWorkoutDayCompleted } = useActivityContext();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showWeightDialog, setShowWeightDialog] = useState(false);
+  const [completingWorkout, setCompletingWorkout] = useState<{
+    dayNumber: number;
+    exercises: string[];
+    calories: number;
+    duration: number;
+  } | null>(null);
+>>>>>>> feature/dashboard
 
   const startDate = new Date(plan.startDate);
   const endDate = new Date(plan.endDate);
@@ -31,6 +53,53 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     day: "numeric",
   });
 
+<<<<<<< HEAD
+=======
+  const handleMarkComplete = async (dayNumber: number) => {
+    const workout = plan.dailyWorkouts.find((w) => w.dayNumber === dayNumber);
+    if (!workout) return;
+
+    const exerciseIds = workout.exercises.map((ex) => ex.exerciseId);
+    const calories = workout.targetCalories || 0;
+    const duration = workout.estimatedDurationMinutes || 0;
+
+    try {
+      setIsLoading(true);
+      
+      // Store workout data and show weight dialog
+      setCompletingWorkout({
+        dayNumber,
+        exercises: exerciseIds,
+        calories,
+        duration,
+      });
+      setShowWeightDialog(true);
+    } catch (error) {
+      console.error("Error marking workout complete:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const handleWeightDialogComplete = async () => {
+    if (!completingWorkout) return;
+
+    try {
+      await logWorkoutCompletion(
+        plan.id,
+        completingWorkout.dayNumber,
+        completingWorkout.exercises,
+        completingWorkout.calories,
+        completingWorkout.duration
+      );
+    } catch (error) {
+      console.error("Error completing workout log:", error);
+    } finally {
+      setIsLoading(false);
+      setCompletingWorkout(null);
+    }
+  };
+
+>>>>>>> feature/dashboard
   return (
     <Card>
       <CardHeader>
@@ -100,6 +169,7 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
           <h4 className="font-semibold text-sm mb-3">This Week's Workouts</h4>
           {currentWeekWorkouts.length > 0 ? (
             <div className="space-y-2">
+<<<<<<< HEAD
               {currentWeekWorkouts.map((workout) => (
                 <div
                   key={workout.dayNumber}
@@ -132,6 +202,63 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
                   </div>
                 </div>
               ))}
+=======
+              {currentWeekWorkouts.map((workout) => {
+                const isCompleted = isWorkoutDayCompleted(plan.id, workout.dayNumber);
+                
+                return (
+                  <div
+                    key={workout.dayNumber}
+                    className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
+                      isCompleted
+                        ? "bg-success/10 border border-success/20"
+                        : "bg-neutral-50 hover:bg-neutral-100"
+                    }`}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        {isCompleted && (
+                          <CheckCircle2 className="w-4 h-4 text-success" />
+                        )}
+                        <span className={`font-semibold text-sm ${isCompleted ? "text-success" : ""}`}>
+                          {formatDayOfWeek(workout.dayOfWeek)}
+                        </span>
+                        <span className="text-xs text-neutral-500">
+                          Day {workout.dayNumber}
+                        </span>
+                      </div>
+                      <p className="text-xs text-neutral-600 mt-1">
+                        {workout.title}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-4 text-xs text-neutral-600">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          <span>{workout.estimatedDurationMinutes} min</span>
+                        </div>
+                        {workout.targetCalories && (
+                          <div className="flex items-center gap-1">
+                            <Flame className="w-3 h-3" />
+                            <span>{workout.targetCalories} cal</span>
+                          </div>
+                        )}
+                      </div>
+                      {!isCompleted && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleMarkComplete(workout.dayNumber)}
+                          disabled={isLoading}
+                        >
+                          Complete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+>>>>>>> feature/dashboard
             </div>
           ) : (
             <p className="text-sm text-neutral-500 italic text-center py-4">
@@ -161,6 +288,15 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
           </p>
         )}
       </CardContent>
+<<<<<<< HEAD
+=======
+
+      <WeightUpdateDialog
+        open={showWeightDialog}
+        onOpenChange={setShowWeightDialog}
+        onComplete={handleWeightDialogComplete}
+      />
+>>>>>>> feature/dashboard
     </Card>
   );
 }

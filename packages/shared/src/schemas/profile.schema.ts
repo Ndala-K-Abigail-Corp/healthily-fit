@@ -1,6 +1,16 @@
 import { z } from "zod";
 
 /**
+ * Gender enum
+ */
+export const GenderEnum = z.enum([
+  "male",
+  "female",
+  "other",
+  "prefer_not_to_say",
+]);
+
+/**
  * Health conditions enum
  */
 export const HealthConditionEnum = z.enum([
@@ -46,6 +56,7 @@ export const FitnessGoalEnum = z.enum([
 export const ProfileSchema = z.object({
   userId: z.string().min(1),
   age: z.number().int().min(13).max(120),
+  gender: GenderEnum,
   heightCm: z.number().min(50).max(300),
   weightKg: z.number().min(20).max(500),
   healthConditions: z.array(HealthConditionEnum),
@@ -57,6 +68,7 @@ export const ProfileSchema = z.object({
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;
+export type Gender = z.infer<typeof GenderEnum>;
 export type HealthCondition = z.infer<typeof HealthConditionEnum>;
 export type DietaryPreference = z.infer<typeof DietaryPreferenceEnum>;
 export type FitnessGoal = z.infer<typeof FitnessGoalEnum>;

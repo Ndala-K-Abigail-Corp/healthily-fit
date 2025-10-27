@@ -54,3 +54,32 @@ export const FIRESTORE_COLLECTIONS = {
   WORKOUT_PLANS: "workoutPlans",
 } as const;
 
+/**
+ * Gender display labels
+ */
+export const GENDER_LABELS = {
+  male: "Male",
+  female: "Female",
+  other: "Other",
+  prefer_not_to_say: "Prefer not to say",
+} as const;
+
+/**
+ * Workout generation constants
+ */
+export const WORKOUT_CONSTANTS = {
+  DEFAULT_WEEKS: 4,
+  WORKOUTS_PER_WEEK: 3,
+  MIN_EXERCISES_PER_DAY: 4,
+  MAX_EXERCISES_PER_DAY: 8,
+} as const;
+
+/**
+ * Exercise difficulty display labels
+ */
+export const DIFFICULTY_LABELS = {
+  beginner: "Beginner",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+} as const;
+

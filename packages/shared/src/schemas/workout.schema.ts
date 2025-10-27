@@ -69,6 +69,8 @@ export const WorkoutPlanSchema = z.object({
   dailyWorkouts: z.array(DailyWorkoutSchema),
   totalWeeks: z.number().int().min(1),
   generatedAt: z.date(),
+  isCustom: z.boolean().default(false),
+  customizedFrom: z.string().optional(),
   notes: z.string().optional(),
 });
 

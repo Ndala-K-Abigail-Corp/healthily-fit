@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   DietaryPreferenceEnum,
   FitnessGoalEnum,
+  GenderEnum,
   HealthConditionEnum,
   ProfileInputSchema,
   type Profile,
@@ -41,6 +42,7 @@ export function ProfileEditForm({
   } = useForm<ProfileInput>({
     defaultValues: {
       age: profile.age,
+      gender: profile.gender,
       dietaryPreference: profile.dietaryPreference,
       fitnessGoal: profile.fitnessGoal,
       healthConditions: profile.healthConditions,
@@ -98,6 +100,28 @@ export function ProfileEditForm({
             />
             {errors.age && (
               <p className="text-sm text-error">{errors.age.message}</p>
+            )}
+          </div>
+
+          {/* Gender */}
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender *</Label>
+            <select
+              id="gender"
+              className="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              {...register("gender")}
+              disabled={isLoading}
+            >
+              {GenderEnum.options.map((option) => (
+                <option key={option} value={option}>
+                  {option === "prefer_not_to_say"
+                    ? "Prefer not to say"
+                    : option.charAt(0).toUpperCase() + option.slice(1)}
+                </option>
+              ))}
+            </select>
+            {errors.gender && (
+              <p className="text-sm text-error">{errors.gender.message}</p>
             )}
           </div>
 
