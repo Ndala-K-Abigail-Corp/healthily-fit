@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import { ActivityProvider } from "./context/activity-context";
 import { AuthProvider } from "./context/auth-context";
 import { OnboardingProvider } from "./context/onboarding-context";
 import { ProfileProvider } from "./context/profile-context";
@@ -85,9 +86,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <AuthProvider>
       <ProfileProvider>
         <WorkoutProvider>
-          <OnboardingProvider>
-            <App />
-          </OnboardingProvider>
+          <ActivityProvider>
+            <OnboardingProvider>
+              <App />
+            </OnboardingProvider>
+          </ActivityProvider>
         </WorkoutProvider>
       </ProfileProvider>
     </AuthProvider>

@@ -1,3 +1,4 @@
+export { ActivityProvider, useActivityContext } from "./activity-context";
 export { AuthProvider, useAuthContext } from "./auth-context";
 export { ProfileProvider, useProfileContext } from "./profile-context";
 export { OnboardingProvider, useOnboardingContext } from "./onboarding-context";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Save, Trash2, X } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, X } from "lucide-react";
 import type { WorkoutPlan, DailyWorkout, WorkoutSet } from "@healthily-fit/shared";
 
 import { Button } from "@/components/ui/button";
@@ -126,11 +126,23 @@ export function WorkoutEditor({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-heading text-2xl font-bold">Edit Workout Plan</h2>
-          <p className="text-sm text-neutral-600 mt-1">
-            Customize your workout plan exercises and schedule
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <div>
+            <h2 className="font-heading text-2xl font-bold">Edit Workout Plan</h2>
+            <p className="text-sm text-neutral-600 mt-1">
+              Customize your workout plan exercises and schedule
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={onCancel} disabled={isLoading}>
@@ -191,7 +203,7 @@ export function WorkoutEditor({
           </p>
         </div>
 
-        {editedPlan.dailyWorkouts.map((workout, workoutIdx) => (
+        {editedPlan.dailyWorkouts.map((workout) => (
           <Card key={workout.dayNumber}>
             <CardHeader>
               <div className="flex items-center justify-between">

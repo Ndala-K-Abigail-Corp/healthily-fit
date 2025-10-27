@@ -8,13 +8,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  PasswordStrengthIndicator,
+  calculatePasswordStrength,
+} from "./password-strength-indicator";
+
+// Strong password validation
+const passwordValidator = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .refine(
+    (password) => {
+      const { checks } = calculatePasswordStrength(password);
+      return (
+        checks.lowercase &&
+        checks.uppercase &&
+        checks.number &&
+        checks.special
+      );
+    },
+    {
+      message:
+        "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character",
+    }
+  );
 
 const registerSchema = z
   .object({
     confirmPassword: z.string(),
     displayName: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: passwordValidator,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
@@ -31,14 +55,19 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
 
   const {
     formState: { errors },
     handleSubmit,
     register,
+    watch,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
+
+  // Watch password field for strength indicator
+  const passwordValue = watch("password", "");
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -92,6 +121,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           {...register("password")}
           disabled={isLoading}
         />
+        <PasswordStrengthIndicator password={passwordValue || ""} />
         {errors.password && (
           <p className="text-sm text-error">{errors.password.message}</p>
         )}

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -63,6 +64,10 @@ export function WorkoutGeneratorDialog({
             <Activity className="w-6 h-6 text-primary" />
             Generate Workout Plan
           </DialogTitle>
+          <DialogDescription>
+            Create a personalized 4-week workout plan based on your profile, fitness goals, and health conditions. 
+            You can review and accept the generated plan or regenerate for different exercises.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

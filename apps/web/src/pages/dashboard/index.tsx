@@ -8,12 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DashboardLayout,
   ProgressChart,
-  QuickActions,
   RecentActivity,
   StatsCard,
   WorkoutPlanCard,
   WorkoutGeneratorDialog,
 } from "@/components/dashboard";
+import { useActivityContext } from "@/context/activity-context";
 import { useAuthContext } from "@/context/auth-context";
 import { useProfileContext } from "@/context/profile-context";
 import { useWorkoutContext } from "@/context/workout-context";
@@ -22,7 +22,15 @@ export function DashboardPage() {
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
   const { activePlan } = useWorkoutContext();
+  const { activityLogs } = useActivityContext();
   const [showGeneratorDialog, setShowGeneratorDialog] = useState(false);
+
+  // Calculate workouts completed this week
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const workoutsThisWeek = activityLogs.filter(
+    (log) => log.type === "workout" && new Date(log.date) >= oneWeekAgo
+  ).length;
 
   // Profile should exist due to ProtectedRoute, but handle edge case
   if (!profile) {
@@ -71,7 +79,7 @@ export function DashboardPage() {
           <StatsCard
             icon={Flame}
             title="Workouts Completed"
-            value="0"
+            value={workoutsThisWeek.toString()}
             description="This week"
           />
           <StatsCard
@@ -80,11 +88,6 @@ export function DashboardPage() {
             value={formattedGoal}
             description={`Diet: ${profile.dietaryPreference}`}
           />
-        </div>
-
-        {/* Quick Actions */}
-        <div className="animate-slideUp [animation-delay:50ms]">
-          <QuickActions onGenerateWorkout={() => setShowGeneratorDialog(true)} />
         </div>
 
         {/* Main Content Grid */}

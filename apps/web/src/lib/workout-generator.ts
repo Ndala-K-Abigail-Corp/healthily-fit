@@ -10,122 +10,125 @@ import {
 } from "./workout-templates";
 
 /**
- * Determine fitness level based on profile
+ * Validation result for profile completeness
  */
-function determineFitnessLevel(
-  profile: Profile
-): "beginner" | "intermediate" | "advanced" {
+export interface ProfileValidation {
+  isValid: boolean;
+  missingFields: string[];
+  errors: string[];
+}
+
+/**
+ * Validate profile before generating workout
+ */
+export function validateProfileForWorkout(profile: Partial<Profile>): ProfileValidation {
+  const missingFields: string[] = [];
+  const errors: string[] = [];
+
+  if (!profile.age || profile.age < 13 || profile.age > 120) {
+    missingFields.push("age");
+    errors.push("Age must be between 13 and 120 years");
+  }
+  if (!profile.gender) {
+    missingFields.push("gender");
+    errors.push("Gender is required");
+  }
+  if (!profile.heightCm || profile.heightCm < 50 || profile.heightCm > 300) {
+    missingFields.push("height");
+    errors.push("Height must be between 50 and 300 cm");
+  }
+  if (!profile.weightKg || profile.weightKg < 20 || profile.weightKg > 500) {
+    missingFields.push("weight");
+    errors.push("Weight must be between 20 and 500 kg");
+  }
+  if (!profile.fitnessGoal) {
+    missingFields.push("fitnessGoal");
+    errors.push("Fitness goal is required");
+  }
+  if (!profile.healthConditions) {
+    missingFields.push("healthConditions");
+    errors.push("Health conditions information is required");
+  }
+  if (!profile.dietaryPreference) {
+    missingFields.push("dietaryPreference");
+    errors.push("Dietary preference is required");
+  }
+
+  return {
+    isValid: missingFields.length === 0,
+    missingFields,
+    errors,
+  };
+}
+
+/**
+ * Determine fitness level
+ */
+function determineFitnessLevel(profile: Profile): "beginner" | "intermediate" | "advanced" {
   const bmi = calculateBMI(profile.weightKg, profile.heightCm);
   const bmiCategory = getBMICategory(bmi);
   const age = profile.age;
 
-  // Conservative approach: default to beginner for safety
-  if (age >= 65 || profile.healthConditions.length > 1) {
+  if (age >= 65 || profile.healthConditions.length > 1) return "beginner";
+  if (bmiCategory === "Overweight" || bmiCategory === "Obese" || profile.healthConditions.length > 0)
     return "beginner";
-  }
-
-  // Overweight/obese or health conditions -> beginner
-  if (
-    bmiCategory === "Overweight" ||
-    bmiCategory === "Obese" ||
-    profile.healthConditions.length > 0
-  ) {
-    return "beginner";
-  }
-
-  // Normal weight adults with no conditions can start intermediate
-  if (age < 65 && bmiCategory === "Normal weight") {
-    return "intermediate";
-  }
+  if (age < 65 && bmiCategory === "Normal weight") return "intermediate";
 
   return "beginner";
 }
 
 /**
- * Get workout duration based on fitness level and age
+ * Workout duration based on fitness level and age
  */
-function getWorkoutDuration(
-  fitnessLevel: "beginner" | "intermediate" | "advanced",
-  age: number
-): number {
-  if (age >= 65) {
-    return 20; // Shorter sessions for seniors
-  }
-
+function getWorkoutDuration(fitnessLevel: "beginner" | "intermediate" | "advanced", age: number): number {
+  if (age >= 65) return 20;
   switch (fitnessLevel) {
-    case "beginner":
-      return 25;
-    case "intermediate":
-      return 35;
-    case "advanced":
-      return 45;
+    case "beginner": return 25;
+    case "intermediate": return 35;
+    case "advanced": return 45;
   }
 }
 
 /**
- * Determine exercise mix based on fitness goal
+ * Exercise mix based on goal
  */
-function getExerciseMixForGoal(goal: string): {
-  cardio: number;
-  strength: number;
-  flexibility: number;
-} {
+export function getExerciseMixForGoal(goal: string) {
   switch (goal) {
-    case "weight_loss":
-      return { cardio: 60, strength: 30, flexibility: 10 };
-    case "muscle_gain":
-      return { cardio: 20, strength: 70, flexibility: 10 };
-    case "endurance":
-      return { cardio: 70, strength: 20, flexibility: 10 };
-    case "flexibility":
-      return { cardio: 30, strength: 20, flexibility: 50 };
+    case "weight_loss": return { cardio: 60, strength: 30, flexibility: 10 };
+    case "muscle_gain": return { cardio: 20, strength: 70, flexibility: 10 };
+    case "endurance": return { cardio: 70, strength: 20, flexibility: 10 };
+    case "flexibility": return { cardio: 30, strength: 20, flexibility: 50 };
     case "general_health":
     case "maintenance":
-    default:
-      return { cardio: 40, strength: 40, flexibility: 20 };
+    default: return { cardio: 40, strength: 40, flexibility: 20 };
   }
 }
 
 /**
- * Select exercises based on type and count needed
+ * Select exercises
  */
-function selectExercises(
-  availableExercises: ExerciseTemplate[],
-  type: "cardio" | "strength" | "flexibility" | "balance",
-  count: number
-): ExerciseTemplate[] {
+function selectExercises(availableExercises: ExerciseTemplate[], type: "cardio" | "strength" | "flexibility" | "balance", count: number) {
   const typeExercises = getExercisesByType(availableExercises, type);
-
-  // Shuffle and select
   const shuffled = [...typeExercises].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, Math.min(count, shuffled.length));
 }
 
 /**
- * Create workout sets from exercises
+ * Create workout sets
  */
-function createWorkoutSets(
-  exercises: ExerciseTemplate[],
-  fitnessLevel: "beginner" | "intermediate" | "advanced"
-): WorkoutSet[] {
-  const setsMap = {
-    beginner: 2,
-    intermediate: 3,
-    advanced: 4,
-  };
-
-  const repsMap = {
-    beginner: 10,
-    intermediate: 12,
-    advanced: 15,
-  };
-
+function createWorkoutSets(exercises: ExerciseTemplate[], fitnessLevel: "beginner" | "intermediate" | "advanced"): WorkoutSet[] {
+  const setsMap = { beginner: 2, intermediate: 3, advanced: 4 };
+  const repsMap = { beginner: 10, intermediate: 12, advanced: 15 };
   const sets = setsMap[fitnessLevel];
   const reps = repsMap[fitnessLevel];
 
-  return exercises.map((exercise) => {
+ return exercises.map((exercise) => {
     const isCardio = exercise.type === "cardio";
     const isFlexibility = exercise.type === "flexibility";
+    let note = exercise.description || "";
+
+    if (fitnessLevel === "beginner" && exercise.modifications?.beginner) note = exercise.modifications.beginner;
+    if (fitnessLevel === "advanced" && exercise.modifications?.senior) note = exercise.modifications.senior;
 
     return {
       exerciseId: exercise.id,
@@ -134,13 +137,13 @@ function createWorkoutSets(
       reps: isCardio || isFlexibility ? undefined : reps,
       durationMinutes: isCardio ? 5 : isFlexibility ? 3 : undefined,
       restSeconds: isFlexibility ? 0 : fitnessLevel === "beginner" ? 90 : 60,
-      notes: exercise.modifications?.[fitnessLevel === "beginner" ? "beginner" : fitnessLevel === "advanced" ? undefined : undefined] || exercise.description,
+      notes: note,
     };
   });
 }
 
 /**
- * Generate a daily workout
+ * Generate daily workout
  */
 function generateDailyWorkout(
   dayNumber: number,
@@ -149,128 +152,87 @@ function generateDailyWorkout(
   profile: Profile,
   fitnessLevel: "beginner" | "intermediate" | "advanced"
 ): DailyWorkout {
-  const exerciseMix = getExerciseMixForGoal(profile.fitnessGoal);
   const duration = getWorkoutDuration(fitnessLevel, profile.age);
   const ageGroup = getExercisesForAgeGroup(profile.age);
 
-  // Determine workout type for this day
-  const workoutTypes: Array<{
-    primary: "cardio" | "strength" | "flexibility";
-    secondary?: "cardio" | "strength" | "flexibility";
-  }> = [
-    { primary: "cardio", secondary: "flexibility" }, // Day 1
-    { primary: "strength" }, // Day 2
-    { primary: "cardio", secondary: "strength" }, // Day 3
-    { primary: "strength", secondary: "flexibility" }, // Day 4
+  const workoutTypes = [
+    { primary: "cardio", secondary: "flexibility" },
+    { primary: "strength" },
+    { primary: "cardio", secondary: "strength" },
+    { primary: "strength", secondary: "flexibility" },
   ];
-
   const workoutType = workoutTypes[(dayNumber - 1) % workoutTypes.length];
 
-  let selectedExercises: ExerciseTemplate[] = [];
+  let selected: ExerciseTemplate[] = [];
 
-  // Select primary exercises
-  if (workoutType.primary === "cardio") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "cardio", 2)
-    );
-  } else if (workoutType.primary === "strength") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "strength", 4)
-    );
-  } else if (workoutType.primary === "flexibility") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "flexibility", 5)
-    );
-  }
+  if (workoutType.primary === "cardio") selected.push(...selectExercises(availableExercises, "cardio", 2));
+  if (workoutType.primary === "strength") selected.push(...selectExercises(availableExercises, "strength", 4));
+  if (workoutType.primary === "flexibility") selected.push(...selectExercises(availableExercises, "flexibility", 5));
 
-  // Add secondary exercises
-  if (workoutType.secondary === "strength") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "strength", 2)
-    );
-  } else if (workoutType.secondary === "flexibility") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "flexibility", 3)
-    );
-  }
+  if (workoutType.secondary === "strength") selected.push(...selectExercises(availableExercises, "strength", 2));
+  if (workoutType.secondary === "flexibility") selected.push(...selectExercises(availableExercises, "flexibility", 3));
+  if (ageGroup === "senior") selected.push(...selectExercises(availableExercises, "balance", 1));
 
-  // Add balance exercises for seniors
-  if (ageGroup === "senior") {
-    selectedExercises.push(
-      ...selectExercises(availableExercises, "balance", 1)
-    );
-  }
+  const workoutSets = createWorkoutSets(selected, fitnessLevel);
 
-  const workoutSets = createWorkoutSets(selectedExercises, fitnessLevel);
-
-  // Calculate estimated calories
-  const estimatedCalories = selectedExercises.reduce((total, exercise) => {
-    const sets = workoutSets.find((s) => s.exerciseId === exercise.id);
-    const duration =
-      sets?.durationMinutes || (sets?.reps ? (sets.reps * sets.sets) / 10 : 5);
-    return total + exercise.caloriesPerMinute * duration;
+  const estimatedCalories = selected.reduce((total, exercise) => {
+    const s = workoutSets.find((w) => w.exerciseId === exercise.id);
+    const dur = s?.durationMinutes ?? (s?.reps ? (s.reps * s.sets) / 10 : 5);
+    return total + exercise.caloriesPerMinute * dur;
   }, 0);
 
   return {
     dayNumber,
     dayOfWeek,
     title: `${workoutType.primary.charAt(0).toUpperCase() + workoutType.primary.slice(1)}${workoutType.secondary ? ` & ${workoutType.secondary.charAt(0).toUpperCase() + workoutType.secondary.slice(1)}` : ""} Day`,
-    description: `Focus on ${workoutType.primary} with ${workoutType.secondary ? workoutType.secondary : "recovery"} exercises`,
+    description: `Focus on ${workoutType.primary} with ${workoutType.secondary ?? "recovery"} exercises`,
     exercises: workoutSets,
-    estimatedDurationMinutes: duration,
-    targetCalories: Math.round(estimatedCalories),
+    estimatedDurationMinutes: duration ?? 0,
+    targetCalories: Math.round(estimatedCalories) ?? 0,
   };
 }
-
 /**
- * Generate a complete workout plan for a user profile
+ * Clean object for Firestore (replace undefined with null)
+ */
+export function cleanForFirestore<T>(obj: T): T {
+  const sanitize = (value: any): any => {
+    if (value === undefined) return null;
+    if (value === null) return null;
+    if (value instanceof Date) return value; // Preserve Date objects!
+    if (Array.isArray(value)) return value.map(sanitize);
+    if (typeof value === "object") {
+      const newObj: any = {};
+      for (const k in value) {
+        newObj[k] = sanitize(value[k]);
+      }
+      return newObj;
+    }
+    return value;
+  };
+  return sanitize(obj);
+}
+/**
+ * Generate workout plan
  */
 export function generateWorkoutPlan(profile: Profile): Omit<WorkoutPlan, "id"> {
-  // Determine fitness level
   const fitnessLevel = determineFitnessLevel(profile);
   const ageGroup = getExercisesForAgeGroup(profile.age);
 
-  // Filter exercises based on profile
-  let availableExercises = EXERCISE_DATABASE.filter((ex) =>
-    ex.ageGroups.includes(ageGroup)
-  );
+  let availableExercises = EXERCISE_DATABASE.filter((ex) => ex.ageGroups.includes(ageGroup));
+  availableExercises = filterExercisesByConditions(availableExercises, profile.healthConditions as string[]);
+  availableExercises = filterExercisesByDifficulty(availableExercises, fitnessLevel);
 
-  // Filter by health conditions
-  availableExercises = filterExercisesByConditions(
-    availableExercises,
-    profile.healthConditions as string[]
-  );
-
-  // Filter by difficulty
-  availableExercises = filterExercisesByDifficulty(
-    availableExercises,
-    fitnessLevel
-  );
-
-  // Generate 4-week plan (12 workouts, 3 per week)
   const totalWeeks = 4;
   const workoutsPerWeek = 3;
-  const daysOfWeek: DailyWorkout["dayOfWeek"][] = [
-    "monday",
-    "wednesday",
-    "friday",
-  ];
+  const daysOfWeek: DailyWorkout["dayOfWeek"][] = ["monday", "wednesday", "friday"];
 
   const dailyWorkouts: DailyWorkout[] = [];
 
   for (let week = 0; week < totalWeeks; week++) {
     for (let day = 0; day < workoutsPerWeek; day++) {
       const dayNumber = week * workoutsPerWeek + day + 1;
-      const dayOfWeek = daysOfWeek[day];
-
       dailyWorkouts.push(
-        generateDailyWorkout(
-          dayNumber,
-          dayOfWeek,
-          availableExercises,
-          profile,
-          fitnessLevel
-        )
+        generateDailyWorkout(dayNumber, daysOfWeek[day], availableExercises, profile, fitnessLevel)
       );
     }
   }
@@ -279,7 +241,7 @@ export function generateWorkoutPlan(profile: Profile): Omit<WorkoutPlan, "id"> {
   const endDate = new Date();
   endDate.setDate(startDate.getDate() + totalWeeks * 7);
 
-  return {
+  const plan: Omit<WorkoutPlan, "id"> = {
     userId: profile.userId,
     startDate,
     endDate,
@@ -290,13 +252,13 @@ export function generateWorkoutPlan(profile: Profile): Omit<WorkoutPlan, "id"> {
     isCustom: false,
     notes: `Personalized ${fitnessLevel} level workout plan for ${profile.fitnessGoal.replace("_", " ")} goal`,
   };
+
+  return cleanForFirestore(plan);
 }
 
 /**
- * Regenerate workout plan with different exercises
+ * Regenerate workout plan
  */
 export function regenerateWorkoutPlan(profile: Profile): Omit<WorkoutPlan, "id"> {
-  // Same as generate but with different random seed
   return generateWorkoutPlan(profile);
 }
-

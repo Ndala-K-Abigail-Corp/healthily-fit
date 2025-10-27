@@ -4,6 +4,7 @@
  * Export all custom hooks for easy importing
  */
 
+export { useActivity } from "./use-activity";
 export { useAuth } from "./use-auth";
 export { useProfile } from "./use-profile";
 export { useOnboarding } from "./use-onboarding";

@@ -63,7 +63,7 @@ CI / CD:               GitHub Actions (Turbo-aware pipeline; see §8)
 
 4\. ARCHITECTURE  
     Client (React \+ TanStack Query) ⇄ tRPC HTTPS endpoints (Cloud Functions)  
-    tRPC handlers read/write Firestore documents and interact with Storage.
+
 
     This architecture provides a type-safe, serverless API layer, minimizing backend boilerplate and leveraging Firebase's managed services for authentication, database, and scalability.
 
