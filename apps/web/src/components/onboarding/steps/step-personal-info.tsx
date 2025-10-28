@@ -37,11 +37,13 @@ export function StepPersonalInfo({
   });
 
   return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-6">
+    <form onSubmit={handleSubmit(onNext)} className="space-y-6 animate-slideUp">
       <div className="space-y-4">
         <div>
-          <h2 className="font-heading text-2xl font-bold">Personal Information</h2>
-          <p className="text-neutral-600 mt-sm">
+          <h2 className="font-heading text-2xl font-bold" style={{ fontSize: 'var(--font-size-2xl)', lineHeight: 'var(--line-height-heading)' }}>
+            Personal Information
+          </h2>
+          <p className="text-neutral-600 mt-sm" style={{ fontSize: 'var(--font-size-md)', color: 'var(--color-neutral-600)' }}>
             Let's start with some basic information about you
           </p>
         </div>
@@ -118,13 +120,13 @@ export function StepPersonalInfo({
         </div>
       </div>
 
-      <div className="flex justify-between pt-4">
+      <div className="flex flex-col sm:flex-row justify-between gap-sm pt-4">
         {onBack && (
-          <Button type="button" variant="outline" onClick={onBack}>
+          <Button type="button" variant="outline" onClick={onBack} className="w-full sm:w-auto">
             Back
           </Button>
         )}
-        <Button type="submit" className={!onBack ? "ml-auto" : ""}>
+        <Button type="submit" className={`w-full sm:w-auto ${!onBack ? "sm:ml-auto" : ""}`}>
           Next
         </Button>
       </div>

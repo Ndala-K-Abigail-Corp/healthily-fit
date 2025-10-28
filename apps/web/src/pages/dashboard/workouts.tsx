@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Activity,
+  ArrowLeft,
   Calendar,
   CheckCircle2,
   Clock,
@@ -10,6 +11,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +47,21 @@ export function WorkoutsPage() {
   const editingPlan = editingPlanId
     ? allPlans.find((p) => p.id === editingPlanId)
     : null;
+
+  const handleActivate = async (planId: string) => {
+    if (confirm("Set this plan as your active workout plan? Your current active plan will be cancelled.")) {
+      try {
+        // Cancel the current active plan if it exists
+        if (activePlan && activePlan.id !== planId) {
+          await updatePlan(activePlan.id, { status: "cancelled" });
+        }
+        // Activate the selected plan
+        await updatePlan(planId, { status: "active" });
+      } catch (error) {
+        console.error("Failed to activate plan:", error);
+      }
+    }
+  };
 
   const handleMarkComplete = async (planId: string) => {
     if (confirm("Mark this workout plan as complete?")) {
@@ -108,6 +125,15 @@ export function WorkoutsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Breadcrumb */}
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Dashboard
+        </Link>
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -172,7 +198,7 @@ export function WorkoutsPage() {
                   >
                     <CardContent className="pt-4 pb-4">
                       <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           {plan.status === "active" && (
                             <span className="px-2 py-0.5 text-xs bg-success/10 text-success rounded-full font-medium">
                               Active
@@ -181,6 +207,11 @@ export function WorkoutsPage() {
                           {plan.status === "completed" && (
                             <span className="px-2 py-0.5 text-xs bg-neutral-200 text-neutral-600 rounded-full font-medium">
                               Completed
+                            </span>
+                          )}
+                          {plan.status === "cancelled" && (
+                            <span className="px-2 py-0.5 text-xs bg-warning/10 text-warning rounded-full font-medium">
+                              Archived
                             </span>
                           )}
                           {plan.isCustom && (
@@ -227,6 +258,16 @@ export function WorkoutsPage() {
                         </p>
                       </div>
                       <div className="flex gap-2">
+                        {selectedPlan.status !== "active" && (
+                          <Button
+                            size="sm"
+                            onClick={() => handleActivate(selectedPlan.id)}
+                            disabled={isLoading}
+                          >
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            Set as Active
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline"

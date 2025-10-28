@@ -76,7 +76,23 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       await signUp(data.email, data.password, data.displayName);
       onSuccess?.();
     } catch (err: any) {
-      setError(err.message || "Failed to create account");
+      // Provide user-friendly error messages
+      const errorCode = err.code || "";
+      let errorMessage = "Failed to create account. Please try again.";
+      
+      if (errorCode.includes("email-already-in-use")) {
+        errorMessage = "An account with this email already exists. Please sign in instead.";
+      } else if (errorCode.includes("weak-password")) {
+        errorMessage = "Password is too weak. Please choose a stronger password.";
+      } else if (errorCode.includes("invalid-email")) {
+        errorMessage = "Invalid email address. Please check and try again.";
+      } else if (errorCode.includes("network-request-failed")) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +137,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           {...register("password")}
           disabled={isLoading}
         />
-        <PasswordStrengthIndicator password={passwordValue || ""} />
         {errors.password && (
           <p className="text-sm text-error">{errors.password.message}</p>
         )}
@@ -140,6 +155,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <p className="text-sm text-error">{errors.confirmPassword.message}</p>
         )}
       </div>
+
+      {/* Password Strength Indicator below Confirm Password */}
+      <PasswordStrengthIndicator password={passwordValue || ""} />
 
       {error && (
         <div className="rounded-md bg-error/10 p-3">

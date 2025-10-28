@@ -19,9 +19,17 @@ export function RecentActivity() {
         </CardHeader>
         <CardContent>
           <div className="text-center py-xl space-y-md">
-            <div className="w-16 h-16 mx-auto rounded-full bg-accent/10 flex items-center justify-center">
-              <Flame className="w-8 h-8 text-accent" />
-            </div>
+            {/* 
+              TODO: Replace with themed image
+              Pinterest: https://www.pinterest.com/search/pins/?q=fitness%20tracking%20app%20activity
+              Keywords: "activity tracker", "fitness log", "workout history"
+            */}
+            <img
+              src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=300&h=200&fit=crop"
+              alt="Track your fitness activities and progress"
+              className="mx-auto rounded-lg max-w-xs w-full object-cover"
+              loading="lazy"
+            />
             <div>
               <p className="font-semibold text-lg">No activities logged yet</p>
               <p className="text-sm text-neutral-600 mt-sm">

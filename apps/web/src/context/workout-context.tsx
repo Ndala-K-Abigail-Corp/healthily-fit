@@ -1,45 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { WorkoutPlan } from "@healthily-fit/shared";
-
 import { useAuthContext } from "./auth-context";
 import { useProfileContext } from "./profile-context";
 import {
   createWorkoutPlan as createWorkoutPlanFirestore,
   deleteWorkoutPlan as deleteWorkoutPlanFirestore,
-<<<<<<< HEAD
-  fetchActiveWorkoutPlan,
-  fetchWorkoutPlans,
-=======
   fetchWorkoutPlans,
   getSafeProfileForWorkout,
->>>>>>> feature/dashboard
   updateWorkoutPlan as updateWorkoutPlanFirestore,
-} from "@/lib/firestore";
-import { generateWorkoutPlan } from "@/lib/workout-generator";
+} from "../lib/firestore";
+import { generateWorkoutPlan } from "../lib/workout-generator";
 
-<<<<<<< HEAD
-// Helper to sanitize undefined fields
-function sanitizeWorkoutPlan(plan: Partial<WorkoutPlan>): Omit<WorkoutPlan, "id"> {
-  return {
-    userId: plan.userId ?? "",
-    name: plan.name ?? "Custom Workout Plan",
-    status: plan.status ?? "active",
-    days: plan.days?.map((day) => ({
-      ...day,
-      exercises: day.exercises?.map((ex) => ({
-        name: ex.name ?? "",
-        sets: ex.sets ?? 0,
-        reps: ex.reps ?? 0,
-        duration: ex.duration ?? 0,
-      })) ?? [],
-    })) ?? [],
-    createdAt: plan.createdAt ?? new Date().toISOString(),
-    updatedAt: plan.updatedAt ?? new Date().toISOString(),
-  };
-}
-
-=======
->>>>>>> feature/dashboard
 interface WorkoutContextValue {
   activePlan: WorkoutPlan | null;
   allPlans: WorkoutPlan[];
@@ -99,37 +70,24 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       throw new Error("User and profile must be available to generate plan");
     }
 
-<<<<<<< HEAD
-    if (!profile.gender || !profile.age || !profile.BMI) {
-      throw new Error("Profile missing required fields for generating workouts");
-    }
-
-=======
->>>>>>> feature/dashboard
     try {
       setIsLoading(true);
       setError(null);
 
-<<<<<<< HEAD
-      // Generate plan from profile (age, gender, BMI, diet, health conditions, goals)
-      const generatedPlan = generateWorkoutPlan(profile);
-
-      // Sanitize plan before saving
-      const sanitizedPlan = sanitizeWorkoutPlan({
-        ...generatedPlan,
-        userId: user.uid,
-      });
-
-      // Save to Firestore client-side
-      const savedPlan = await createWorkoutPlanFirestore(user.uid, sanitizedPlan);
-=======
       // Validate profile before generation
       const { validation } = await getSafeProfileForWorkout(user.uid);
 
       if (!validation.isValid) {
-        const errorMessage = `Please complete your profile before generating a workout plan:\n${validation.errors.join("\n")}`;
+        const errorMessage = `Please complete your profile before generating a workout plan:\n${validation.errors.join(
+          "\n"
+        )}`;
         setError(errorMessage);
         throw new Error(errorMessage);
+      }
+
+      // Archive the current active plan if it exists
+      if (activePlan) {
+        await updateWorkoutPlanFirestore(activePlan.id, { status: "cancelled" });
       }
 
       // Generate plan from profile (age, gender, height, weight, diet, health conditions, goals)
@@ -137,10 +95,12 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
 
       // Save to Firestore client-side
       const savedPlan = await createWorkoutPlanFirestore(user.uid, generatedPlan);
->>>>>>> feature/dashboard
 
       setActivePlan(savedPlan);
-      setAllPlans((prev) => [...prev, savedPlan]);
+      setAllPlans((prev) => 
+        prev.map((p) => p.id === activePlan?.id ? { ...p, status: "cancelled" as const } : p)
+           .concat(savedPlan)
+      );
 
       return savedPlan;
     } catch (err: any) {
@@ -161,12 +121,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-<<<<<<< HEAD
-      const sanitizedPlan = sanitizeWorkoutPlan({ ...plan, userId: user.uid });
-      const savedPlan = await createWorkoutPlanFirestore(user.uid, sanitizedPlan);
-=======
       const savedPlan = await createWorkoutPlanFirestore(user.uid, plan);
->>>>>>> feature/dashboard
 
       setAllPlans((prev) => [...prev, savedPlan]);
       if (savedPlan.status === "active") setActivePlan(savedPlan);
@@ -189,12 +144,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(true);
       setError(null);
 
-<<<<<<< HEAD
-      const sanitizedUpdates = sanitizeWorkoutPlan(updates as any);
-      const updatedPlan = await updateWorkoutPlanFirestore(planId, sanitizedUpdates);
-=======
       const updatedPlan = await updateWorkoutPlanFirestore(planId, updates);
->>>>>>> feature/dashboard
 
       setAllPlans((prev) =>
         prev.map((p) => (p.id === planId ? updatedPlan : p))
@@ -254,8 +204,5 @@ export function useWorkoutContext() {
   if (!context)
     throw new Error("useWorkoutContext must be used within a WorkoutProvider");
   return context;
-<<<<<<< HEAD
 }
-=======
-};
->>>>>>> feature/dashboard
+

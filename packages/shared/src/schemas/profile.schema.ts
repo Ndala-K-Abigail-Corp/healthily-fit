@@ -6,8 +6,6 @@ import { z } from "zod";
 export const GenderEnum = z.enum([
   "male",
   "female",
-  "other",
-  "prefer_not_to_say",
 ]);
 
 /**

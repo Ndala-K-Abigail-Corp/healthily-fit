@@ -1,7 +1,14 @@
 import { Dumbbell } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function Footer() {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (path: string) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => navigate(path), 300);
+  };
+
   return (
     <footer className="bg-neutral-800 text-neutral-100 py-xl px-xl">
       <div className="container mx-auto max-w-6xl">
@@ -86,12 +93,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="mailto:contact@healthilyfit.com"
+                <Link
+                  to="/contact"
                   className="hover:text-primary transition-colors duration-fast"
                 >
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -101,36 +108,36 @@ export function Footer() {
             <h4 className="font-semibold mb-md text-white">Legal</h4>
             <ul className="space-y-sm text-sm text-neutral-300">
               <li>
-                <a
-                  href="/privacy"
-                  className="hover:text-primary transition-colors duration-fast"
+                <button
+                  onClick={() => handleLinkClick('/privacy')}
+                  className="hover:text-primary transition-colors duration-fast focus:text-primary focus:outline-none text-left"
                 >
                   Privacy Policy
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="/terms"
-                  className="hover:text-primary transition-colors duration-fast"
+                <button
+                  onClick={() => handleLinkClick('/terms')}
+                  className="hover:text-primary transition-colors duration-fast focus:text-primary focus:outline-none text-left"
                 >
                   Terms of Service
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="/disclaimer"
-                  className="hover:text-primary transition-colors duration-fast"
+                <button
+                  onClick={() => handleLinkClick('/disclaimer')}
+                  className="hover:text-primary transition-colors duration-fast focus:text-primary focus:outline-none text-left"
                 >
                   Health Disclaimer
-                </a>
+                </button>
               </li>
               <li>
-                <a
-                  href="/cookies"
-                  className="hover:text-primary transition-colors duration-fast"
+                <button
+                  onClick={() => handleLinkClick('/cookies')}
+                  className="hover:text-primary transition-colors duration-fast focus:text-primary focus:outline-none text-left"
                 >
                   Cookie Policy
-                </a>
+                </button>
               </li>
             </ul>
           </div>

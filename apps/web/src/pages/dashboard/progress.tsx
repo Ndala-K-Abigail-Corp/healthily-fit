@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { TrendingUp, Activity } from "lucide-react";
+import { TrendingUp, Activity, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { DashboardLayout } from "@/components/dashboard";
 import { WeightHistoryChart } from "@/components/dashboard/weight-history-chart";
@@ -44,6 +45,15 @@ export function ProgressPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Breadcrumb */}
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Dashboard
+        </Link>
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

@@ -1,17 +1,8 @@
 import { useState } from "react";
 import { Activity, Calendar, CheckCircle2, Clock, RefreshCw } from "lucide-react";
 import type { WorkoutPlan } from "@healthily-fit/shared";
-
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-<<<<<<< HEAD
-=======
-  DialogDescription,
->>>>>>> feature/dashboard
-  DialogHeader,
-  DialogTitle,
+import { Dialog, DialogContent, DialogDescription, DialogHeader,DialogTitle,
 } from "@/components/ui/dialog";
 import { useWorkoutContext } from "@/context/workout-context";
 import { calculatePlanCalories, calculatePlanDuration } from "@/lib/workout-utils";
@@ -67,13 +58,10 @@ export function WorkoutGeneratorDialog({
             <Activity className="w-6 h-6 text-primary" />
             Generate Workout Plan
           </DialogTitle>
-<<<<<<< HEAD
-=======
           <DialogDescription>
             Create a personalized 4-week workout plan based on your profile, fitness goals, and health conditions. 
             You can review and accept the generated plan or regenerate for different exercises.
           </DialogDescription>
->>>>>>> feature/dashboard
         </DialogHeader>
 
         <div className="space-y-6">

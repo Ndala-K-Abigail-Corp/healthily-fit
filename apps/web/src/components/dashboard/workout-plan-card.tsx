@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 import { useState } from "react";
->>>>>>> feature/dashboard
 import { Calendar, CheckCircle2, Clock, Edit2, Flame, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { WorkoutPlan } from "@healthily-fit/shared";
@@ -13,11 +10,8 @@ import {
   getCurrentWeekWorkouts,
   formatDayOfWeek,
 } from "@/lib/workout-utils";
-<<<<<<< HEAD
-=======
 import { useActivityContext } from "@/context/activity-context";
 import { WeightUpdateDialog } from "./weight-update-dialog";
->>>>>>> feature/dashboard
 
 interface WorkoutPlanCardProps {
   plan: WorkoutPlan;
@@ -27,8 +21,6 @@ interface WorkoutPlanCardProps {
 export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
   const progress = calculatePlanProgress(plan);
   const currentWeekWorkouts = getCurrentWeekWorkouts(plan);
-<<<<<<< HEAD
-=======
   const { logWorkoutCompletion, isWorkoutDayCompleted } = useActivityContext();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +31,6 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     calories: number;
     duration: number;
   } | null>(null);
->>>>>>> feature/dashboard
 
   const startDate = new Date(plan.startDate);
   const endDate = new Date(plan.endDate);
@@ -53,8 +44,6 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     day: "numeric",
   });
 
-<<<<<<< HEAD
-=======
   const handleMarkComplete = async (dayNumber: number) => {
     const workout = plan.dailyWorkouts.find((w) => w.dayNumber === dayNumber);
     if (!workout) return;
@@ -99,7 +88,6 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     }
   };
 
->>>>>>> feature/dashboard
   return (
     <Card>
       <CardHeader>
@@ -169,40 +157,6 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
           <h4 className="font-semibold text-sm mb-3">This Week's Workouts</h4>
           {currentWeekWorkouts.length > 0 ? (
             <div className="space-y-2">
-<<<<<<< HEAD
-              {currentWeekWorkouts.map((workout) => (
-                <div
-                  key={workout.dayNumber}
-                  className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        {formatDayOfWeek(workout.dayOfWeek)}
-                      </span>
-                      <span className="text-xs text-neutral-500">
-                        Day {workout.dayNumber}
-                      </span>
-                    </div>
-                    <p className="text-xs text-neutral-600 mt-1">
-                      {workout.title}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4 text-xs text-neutral-600">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      <span>{workout.estimatedDurationMinutes} min</span>
-                    </div>
-                    {workout.targetCalories && (
-                      <div className="flex items-center gap-1">
-                        <Flame className="w-3 h-3" />
-                        <span>{workout.targetCalories} cal</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-=======
               {currentWeekWorkouts.map((workout) => {
                 const isCompleted = isWorkoutDayCompleted(plan.id, workout.dayNumber);
                 
@@ -258,7 +212,6 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
                   </div>
                 );
               })}
->>>>>>> feature/dashboard
             </div>
           ) : (
             <p className="text-sm text-neutral-500 italic text-center py-4">
@@ -288,15 +241,12 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
           </p>
         )}
       </CardContent>
-<<<<<<< HEAD
-=======
 
       <WeightUpdateDialog
         open={showWeightDialog}
         onOpenChange={setShowWeightDialog}
         onComplete={handleWeightDialogComplete}
       />
->>>>>>> feature/dashboard
     </Card>
   );
 }

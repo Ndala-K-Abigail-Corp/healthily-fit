@@ -1,4 +1,5 @@
-import { Settings } from "lucide-react";
+import { Settings, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { DashboardLayout } from "@/components/dashboard";
@@ -10,6 +11,15 @@ export function SettingsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {/* Breadcrumb */}
+        <Link
+          to="/dashboard"
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Dashboard
+        </Link>
+
         <div>
           <h1 className="font-heading text-3xl font-bold">Settings</h1>
           <p className="text-neutral-600 mt-sm">

@@ -40,7 +40,23 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       await signIn(data.email, data.password);
       onSuccess?.();
     } catch (err: any) {
-      setError(err.message || "Failed to sign in");
+      // Provide user-friendly error messages
+      const errorCode = err.code || "";
+      let errorMessage = "Failed to sign in. Please try again.";
+      
+      if (errorCode.includes("user-not-found") || errorCode.includes("invalid-credential")) {
+        errorMessage = "Invalid email or password. Please check your credentials and try again.";
+      } else if (errorCode.includes("wrong-password")) {
+        errorMessage = "Invalid email or password. Please check your credentials and try again.";
+      } else if (errorCode.includes("too-many-requests")) {
+        errorMessage = "Too many failed login attempts. Please try again later or reset your password.";
+      } else if (errorCode.includes("network-request-failed")) {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

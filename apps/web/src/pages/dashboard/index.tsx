@@ -47,13 +47,13 @@ export function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-xl">
+      <div className="space-y-xl" style={{ gap: 'var(--space-xl)' }}>
         {/* Header */}
         <div className="animate-fadeIn">
-          <h1 className="font-heading text-3xl md:text-4xl font-bold">
+          <h1 className="font-heading text-3xl md:text-4xl font-bold" style={{ fontSize: 'var(--font-size-3xl)', lineHeight: 'var(--line-height-heading)' }}>
             Welcome back, {user?.displayName || "there"}! 👋
           </h1>
-          <p className="text-neutral-600 mt-sm text-lg">
+          <p className="text-neutral-600 mt-sm text-lg" style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-neutral-600)' }}>
             Here's your fitness progress overview
           </p>
         </div>
@@ -106,9 +106,17 @@ export function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-xl space-y-md">
-                    <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
-                      <Plus className="w-8 h-8 text-primary" />
-                    </div>
+                    {/* 
+                      TODO: Replace with themed image
+                      Pinterest: https://www.pinterest.com/search/pins/?q=workout%20plan%20calendar%20fitness
+                      Keywords: "fitness planner", "workout schedule", "training calendar"
+                    */}
+                    <img
+                      src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&h=200&fit=crop"
+                      alt="Create your personalized workout plan"
+                      className="mx-auto rounded-lg max-w-xs w-full object-cover"
+                      loading="lazy"
+                    />
                     <div>
                       <p className="font-semibold text-lg">No active workout plan</p>
                       <p className="text-sm text-neutral-600 mt-sm">

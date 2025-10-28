@@ -1,4 +1,4 @@
-import { Dumbbell, Menu, X } from "lucide-react";
+import { Dumbbell, Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -76,13 +76,14 @@ export function Navbar() {
               </>
             ) : (
               <Link
-                to="/"
+                to={user ? "/dashboard" : "/"}
                 className="text-neutral-100 hover:text-primary transition-colors duration-fast text-sm font-medium"
               >
-                Home
+                {user ? "Dashboard" : "Home"}
               </Link>
             )}
             {user && (
+              <>
               <Link
                 to="/dashboard"
                 className={cn(
@@ -94,6 +95,18 @@ export function Navbar() {
               >
                 Dashboard
               </Link>
+                <Link
+                  to="/dashboard/profile"
+                  className={cn(
+                    "text-sm font-medium transition-colors duration-fast",
+                    location.pathname === "/dashboard/profile"
+                      ? "text-primary"
+                      : "text-neutral-100 hover:text-primary"
+                  )}
+                >
+                  Profile
+                </Link>
+              </>
             )}
           </div>
 
@@ -101,16 +114,25 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-sm">
             {user ? (
               <>
-                <span className="text-sm text-neutral-300 mr-sm hidden lg:inline">
+                <Link to="/dashboard/profile">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-neutral-100 hover:text-primary"
+                  >
+                    <User className="w-4 h-4 mr-1" />
+                    <span className="hidden lg:inline">
                   {user.displayName || user.email}
                 </span>
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={signOut}
                   className="border-primary text-primary hover:bg-primary hover:text-white"
                 >
-                  Sign Out
+                  Logout
                 </Button>
               </>
             ) : (
@@ -166,15 +188,16 @@ export function Navbar() {
               </>
             ) : (
               <Link
-                to="/"
+                to={user ? "/dashboard" : "/"}
                 onClick={closeMenu}
                 className="block py-2 px-4 text-neutral-100 hover:bg-neutral-800 hover:text-primary rounded-md transition-colors duration-fast"
               >
-                Home
+                {user ? "Dashboard" : "Home"}
               </Link>
             )}
 
             {user && (
+              <>
               <Link
                 to="/dashboard"
                 onClick={closeMenu}
@@ -187,6 +210,19 @@ export function Navbar() {
               >
                 Dashboard
               </Link>
+                <Link
+                  to="/dashboard/profile"
+                  onClick={closeMenu}
+                  className={cn(
+                    "block py-2 px-4 rounded-md transition-colors duration-fast",
+                    location.pathname === "/dashboard/profile"
+                      ? "bg-primary/10 text-primary"
+                      : "text-neutral-100 hover:bg-neutral-800 hover:text-primary"
+                  )}
+                >
+                  Profile
+                </Link>
+              </>
             )}
 
             {/* Mobile Auth Buttons */}
@@ -205,7 +241,7 @@ export function Navbar() {
                     }}
                     className="w-full border-primary text-primary hover:bg-primary hover:text-white"
                   >
-                    Sign Out
+                    Logout
                   </Button>
                 </>
               ) : (

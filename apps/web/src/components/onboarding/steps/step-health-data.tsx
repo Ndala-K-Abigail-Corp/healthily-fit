@@ -60,11 +60,13 @@ export function StepHealthData({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 animate-slideUp">
       <div className="space-y-4">
         <div>
-          <h2 className="font-heading text-2xl font-bold">Health Information</h2>
-          <p className="text-neutral-600 mt-sm">
+          <h2 className="font-heading text-2xl font-bold" style={{ fontSize: 'var(--font-size-2xl)', lineHeight: 'var(--line-height-heading)' }}>
+            Health Information
+          </h2>
+          <p className="text-neutral-600 mt-sm" style={{ fontSize: 'var(--font-size-md)', color: 'var(--color-neutral-600)' }}>
             Help us customize safe workouts for you
           </p>
         </div>
@@ -117,11 +119,13 @@ export function StepHealthData({
         </div>
       </div>
 
-      <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack}>
+      <div className="flex flex-col sm:flex-row justify-between gap-sm pt-4">
+        <Button type="button" variant="outline" onClick={onBack} className="w-full sm:w-auto">
           Back
         </Button>
-        <Button type="submit">Next</Button>
+        <Button type="submit" className="w-full sm:w-auto">
+          Next
+        </Button>
       </div>
     </form>
   );
