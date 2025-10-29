@@ -60,16 +60,16 @@ export function ProfileView({ profile }: ProfileViewProps) {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4" style={{ marginBottom: 'var(--space-lg)' }}>
         <div>
           <h2 className="font-heading text-3xl font-bold" style={{ fontSize: 'var(--font-size-3xl)' }}>
             My Profile
           </h2>
-          <p className="text-neutral-600 mt-2" style={{ fontSize: 'var(--font-size-md)' }}>
+          <p className="text-neutral-600 mt-2" style={{ fontSize: 'var(--font-size-md)', marginTop: 'var(--space-sm)' }}>
             Your health and fitness information
           </p>
         </div>
-        <Button onClick={() => setIsEditing(true)} className="gap-2" size="lg">
+        <Button onClick={() => setIsEditing(true)} className="gap-2 shrink-0" size="lg">
           <Edit2 className="w-4 h-4" />
           Edit Profile
         </Button>
@@ -124,9 +124,9 @@ export function ProfileView({ profile }: ProfileViewProps) {
             Personal Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+        <CardContent className="pt-6" style={{ paddingTop: 'var(--space-lg)' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ gap: 'var(--space-lg)' }}>
+            <div className="space-y-4" style={{ gap: 'var(--space-md)' }}>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                   <Calendar className="w-5 h-5 text-primary" />
@@ -159,8 +159,8 @@ export function ProfileView({ profile }: ProfileViewProps) {
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
+            <div className="space-y-4" style={{ gap: 'var(--space-md)' }}>
+              <div className="flex items-center gap-3" style={{ gap: 'var(--space-md)' }}>
                 <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
                   <Weight className="w-5 h-5 text-success" />
                 </div>

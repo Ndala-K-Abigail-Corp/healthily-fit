@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 import { env } from "@/env";
 
@@ -18,6 +19,27 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase App Check for bot protection and abuse prevention
+// NOTE: To enable in production, you must:
+// 1. Go to Firebase Console > Project Settings > App Check
+// 2. Register your app with reCAPTCHA v3
+// 3. Add the site key to your .env file as VITE_FIREBASE_APP_CHECK_KEY
+// 4. Uncomment the code below and add VITE_FIREBASE_APP_CHECK_KEY to env.ts
+// 
+// if (import.meta.env.MODE === "production" && env.VITE_FIREBASE_APP_CHECK_KEY) {
+//   try {
+//     initializeAppCheck(app, {
+//       provider: new ReCaptchaV3Provider(env.VITE_FIREBASE_APP_CHECK_KEY),
+//       isTokenAutoRefreshEnabled: true, // Auto-refresh before token expires
+//     });
+//     console.log("✅ Firebase App Check initialized");
+//   } catch (error) {
+//     console.error("⚠️ Failed to initialize Firebase App Check:", error);
+//   }
+// } else {
+//   console.warn("⚠️ Firebase App Check is disabled. Enable in Firebase Console for production.");
+// }
 
 // Initialize Firebase services
 export const auth = getAuth(app);

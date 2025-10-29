@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
@@ -8,24 +8,42 @@ import { OnboardingProvider } from "./context/onboarding-context";
 import { ProfileProvider } from "./context/profile-context";
 import { ThemeProvider } from "./context/theme-context";
 import { WorkoutProvider } from "./context/workout-context";
-import { LandingPage } from "./pages/landing";
-import { LoginPage } from "./pages/login";
-import { OnboardingPage } from "./pages/onboarding";
-import { SignupPage } from "./pages/signup";
-import { ContactPage } from "./pages/contact";
-import { DashboardPage } from "./pages/dashboard";
-import { ProfilePage } from "./pages/dashboard/profile";
-import { ProgressPage } from "./pages/dashboard/progress";
-import { SettingsPage } from "./pages/dashboard/settings";
-import { WorkoutsPage } from "./pages/dashboard/workouts";
-import { PrivacyPage } from "./pages/legal/privacy";
-import { TermsPage } from "./pages/legal/terms";
-import { DisclaimerPage } from "./pages/legal/disclaimer";
-import { CookiesPage } from "./pages/legal/cookies";
-import { SplashPage } from "./pages/splash";
+import { ErrorBoundary } from "./components/error-boundary";
 import { OnboardingRoute } from "./routes/onboarding-route";
 import { ProtectedRoute } from "./routes/protected-route";
+// import { initSentry } from "./lib/sentry"; // Uncomment when Sentry is configured
 import "./styles/globals.css";
+
+// Eager load landing and auth pages (common entry points)
+import { LandingPage } from "./pages/landing";
+import { LoginPage } from "./pages/login";
+import { SignupPage } from "./pages/signup";
+
+// Lazy load other pages for better initial load performance
+const DashboardPage = lazy(() => import("./pages/dashboard"));
+const ProfilePage = lazy(() => import("./pages/dashboard/profile"));
+const ProgressPage = lazy(() => import("./pages/dashboard/progress"));
+const SettingsPage = lazy(() => import("./pages/dashboard/settings"));
+const WorkoutsPage = lazy(() => import("./pages/dashboard/workouts"));
+const OnboardingPage = lazy(() => import("./pages/onboarding"));
+const ContactPage = lazy(() => import("./pages/contact"));
+const SplashPage = lazy(() => import("./pages/splash"));
+const PrivacyPage = lazy(() => import("./pages/legal/privacy"));
+const TermsPage = lazy(() => import("./pages/legal/terms"));
+const DisclaimerPage = lazy(() => import("./pages/legal/disclaimer"));
+const CookiesPage = lazy(() => import("./pages/legal/cookies"));
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 mx-auto border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-neutral-600 font-medium">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
@@ -35,7 +53,8 @@ function App() {
         v7_relativeSplatPath: true,
       }}
     >
-      <Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/welcome" element={<SplashPage />} />
         <Route path="/auth/login" element={<LoginPage />} />
@@ -94,14 +113,19 @@ function App() {
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
 
+// Initialize Sentry (uncomment when configured)
+// initSentry();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
       <AuthProvider>
         <ProfileProvider>
           <WorkoutProvider>
@@ -114,6 +138,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </ProfileProvider>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
 

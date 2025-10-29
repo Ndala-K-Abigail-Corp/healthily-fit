@@ -31,7 +31,7 @@ import type { WorkoutPlan } from "@healthily-fit/shared";
 /**
  * Workouts page - View and manage workout plans
  */
-export function WorkoutsPage() {
+export default function WorkoutsPage() {
   const { activePlan, allPlans, deletePlan, updatePlan, createCustomPlan, isLoading } =
     useWorkoutContext();
   const [showGeneratorDialog, setShowGeneratorDialog] = useState(false);

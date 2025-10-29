@@ -17,7 +17,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="min-h-screen flex flex-col bg-neutral-100">
       <Navbar />
       
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
         {/* Sidebar */}
         <DashboardSidebar
           isMobileOpen={isMobileSidebarOpen}
@@ -25,8 +25,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         />
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 mt-16">
-          <div className="container mx-auto max-w-7xl px-4 py-6">
+        <main className="flex-1 lg:ml-64 mt-16 flex flex-col">
+          <div className="container mx-auto max-w-7xl px-4 py-6 flex-1">
             {/* Mobile Menu Button */}
             <div className="lg:hidden mb-4">
               <Button

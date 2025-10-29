@@ -19,7 +19,7 @@ import { useAuthContext } from "@/context/auth-context";
 import { useProfileContext } from "@/context/profile-context";
 import { useWorkoutContext } from "@/context/workout-context";
 
-export function DashboardPage() {
+export default function DashboardPage() {
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
   const { activePlan } = useWorkoutContext();

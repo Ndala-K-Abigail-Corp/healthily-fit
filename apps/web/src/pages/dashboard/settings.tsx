@@ -7,7 +7,7 @@ import { DashboardLayout } from "@/components/dashboard";
 /**
  * Settings page - Placeholder for future implementation
  */
-export function SettingsPage() {
+export default function SettingsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">

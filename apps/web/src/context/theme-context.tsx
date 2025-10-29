@@ -1,49 +1,21 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-type Theme = "light" | "dark";
+import React, { createContext, useContext, useEffect } from "react";
 
 interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
+  theme: "light";
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const THEME_STORAGE_KEY = "healthily-fit-theme";
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // LOCKED TO LIGHT MODE - Dark theme disabled but infrastructure preserved
-  const [theme, setThemeState] = useState<Theme>("light");
-
   useEffect(() => {
     const root = window.document.documentElement;
-    
-    // Remove previous theme class
-    root.classList.remove("light", "dark");
-    
-    // Force light mode only
+    // Ensure light mode is always applied
     root.classList.add("light");
-    
-    // Clear any dark mode preference from localStorage
-    localStorage.removeItem(THEME_STORAGE_KEY);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    // Theme toggle disabled - always stay in light mode
-    // Infrastructure kept for future dark mode implementation
-    console.log("Theme toggle is currently disabled. Light mode only.");
-  };
-
-  const setTheme = (newTheme: Theme) => {
-    // Theme setting disabled - always use light mode
-    console.log("Theme setting is currently disabled. Light mode only.");
-  };
+    root.classList.remove("dark");
+  }, []);
 
   const value: ThemeContextValue = {
-    theme,
-    toggleTheme,
-    setTheme,
+    theme: "light",
   };
 
   return (
@@ -58,4 +30,3 @@ export function useTheme() {
   }
   return context;
 }
-

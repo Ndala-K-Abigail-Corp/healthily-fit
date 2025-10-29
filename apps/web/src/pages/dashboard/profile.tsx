@@ -5,7 +5,7 @@ import { DashboardLayout } from "@/components/dashboard";
 import { ProfileView } from "@/components/profile/profile-view";
 import { useProfileContext } from "@/context/profile-context";
 
-export function ProfilePage() {
+export default function ProfilePage() {
   const { profile } = useProfileContext();
 
   if (!profile) {

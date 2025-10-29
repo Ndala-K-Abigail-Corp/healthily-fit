@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 
-export function TermsPage() {
+export default function TermsPage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <Navbar />

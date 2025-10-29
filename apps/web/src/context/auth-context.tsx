@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 
 import type { User as FirebaseUser } from "firebase/auth";
 import {
@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     try {
       setError(null);
       const credential = await signInWithEmailAndPassword(
@@ -82,9 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(error.message);
       throw error;
     }
-  };
+  }, []);
 
-  const signUp = async (
+  const signUp = useCallback(async (
     email: string,
     password: string,
     displayName?: string
@@ -106,9 +106,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(error.message);
       throw error;
     }
-  };
+  }, []);
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = useCallback(async () => {
     try {
       setError(null);
       const provider = new GoogleAuthProvider();
@@ -118,9 +118,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(error.message);
       throw error;
     }
-  };
+  }, []);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       setError(null);
       await firebaseSignOut(auth);
@@ -128,9 +128,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(error.message);
       throw error;
     }
-  };
+  }, []);
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = useCallback(async (email: string) => {
     try {
       setError(null);
       await sendPasswordResetEmail(auth, email);
@@ -138,9 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setError(error.message);
       throw error;
     }
-  };
+  }, []);
 
-  const value: AuthContextValue = {
+  const value: AuthContextValue = useMemo(() => ({
     error,
     loading,
     resetPassword,
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut,
     signUp,
     user,
-  };
+  }), [error, loading, resetPassword, signIn, signInWithGoogle, signOut, signUp, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

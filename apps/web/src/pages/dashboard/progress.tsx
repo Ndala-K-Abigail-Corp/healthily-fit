@@ -14,7 +14,7 @@ import { useWorkoutContext } from "@/context/workout-context";
 /**
  * Progress page - View analytics and progress reports
  */
-export function ProgressPage() {
+export default function ProgressPage() {
   const { activityLogs, fetchUserActivities, isLoading } = useActivityContext();
   const { profile } = useProfileContext();
   const { activePlan } = useWorkoutContext();

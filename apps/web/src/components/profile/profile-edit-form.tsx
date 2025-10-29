@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -141,8 +141,8 @@ export function ProfileEditForm({
           </div>
 
           {/* Height and Weight */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ gap: 'var(--space-md)' }}>
+            <div className="space-y-2" style={{ gap: 'var(--space-sm)' }}>
               <Label htmlFor="heightCm">Height (cm) *</Label>
               <Input
                 id="heightCm"
@@ -157,7 +157,7 @@ export function ProfileEditForm({
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2" style={{ gap: 'var(--space-sm)' }}>
               <Label htmlFor="weightKg">Weight (kg) *</Label>
               <Input
                 id="weightKg"
@@ -227,7 +227,7 @@ export function ProfileEditForm({
             <p className="text-sm text-neutral-600">
               Select any that apply (helps us ensure safe workouts)
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2" style={{ gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
               {HealthConditionEnum.options.map((condition) => (
                 <button
                   key={condition}
@@ -283,16 +283,17 @@ export function ProfileEditForm({
         </div>
       )}
 
-      <div className="flex justify-end gap-sm">
+      <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3" style={{ gap: 'var(--space-sm)' }}>
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isLoading}
+          className="w-full sm:w-auto"
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
           {isLoading ? "Saving..." : "Save Changes"}
         </Button>
       </div>

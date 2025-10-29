@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function ContactPage() {
+export default function ContactPage() {
   const handleEmailClick = () => {
     window.location.href = "mailto:contact@healthilyfit.com";
   };

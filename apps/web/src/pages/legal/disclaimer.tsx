@@ -2,7 +2,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { AlertCircle } from "lucide-react";
 
-export function DisclaimerPage() {
+export default function DisclaimerPage() {
   return (
     <div className="min-h-screen bg-neutral-100">
       <Navbar />

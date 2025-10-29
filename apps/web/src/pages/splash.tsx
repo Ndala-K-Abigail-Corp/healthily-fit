@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 
-export function SplashPage() {
+export default function SplashPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary to-accent flex items-center justify-center px-4 animate-fadeIn">
       <div className="max-w-6xl mx-auto">

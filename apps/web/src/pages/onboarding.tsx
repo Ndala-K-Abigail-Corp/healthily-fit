@@ -7,7 +7,7 @@ interface OnboardingPageProps {
   onComplete?: () => void;
 }
 
-export function OnboardingPage({ onComplete }: OnboardingPageProps) {
+export default function OnboardingPage({ onComplete }: OnboardingPageProps) {
   const { user } = useAuthContext();
 
   return (

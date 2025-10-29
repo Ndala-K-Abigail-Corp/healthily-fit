@@ -36,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Security audit
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+
       - name: Setup Turbo cache
         uses: actions/cache@v4
         with:
@@ -64,6 +68,9 @@ jobs:
       - name: Build
         run: pnpm exec turbo run build
 
+      - name: Build Storybook
+        run: pnpm exec turbo run build-storybook
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
         working-directory: apps/web
@@ -72,6 +79,13 @@ jobs:
         run: pnpm exec turbo run e2e
         env:
           CI: true
+      
+      - name: Run accessibility tests
+        run: pnpm exec playwright test e2e/accessibility.spec.ts
+        working-directory: apps/web
+        env:
+          CI: true
+        continue-on-error: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4

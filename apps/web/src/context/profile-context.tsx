@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 
 import type { Profile, ProfileInput } from "@healthily-fit/shared";
 
@@ -24,7 +24,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     if (!user) {
       setProfile(null);
       setLoading(false);
@@ -42,13 +42,20 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
+    if (!user) {
+      // Clear profile data when user logs out
+      setProfile(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     fetchProfileData();
   }, [user]);
 
-  const createProfile = async (input: ProfileInput): Promise<Profile> => {
+  const createProfile = useCallback(async (input: ProfileInput): Promise<Profile> => {
     if (!user) {
       throw new Error("User must be authenticated");
     }
@@ -62,9 +69,9 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       setError(err.message);
       throw err;
     }
-  };
+  }, [user]);
 
-  const updateProfile = async (
+  const updateProfile = useCallback(async (
     input: Partial<ProfileInput>
   ): Promise<Profile> => {
     if (!user) {
@@ -80,20 +87,20 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       setError(err.message);
       throw err;
     }
-  };
+  }, [user]);
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     await fetchProfileData();
-  };
+  }, [fetchProfileData]);
 
-  const value: ProfileContextValue = {
+  const value: ProfileContextValue = useMemo(() => ({
     createProfile,
     error,
     loading,
     profile,
     refreshProfile,
     updateProfile,
-  };
+  }), [createProfile, error, loading, profile, refreshProfile, updateProfile]);
 
   return (
     <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>

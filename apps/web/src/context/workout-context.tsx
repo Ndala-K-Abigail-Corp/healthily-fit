@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
 import type { WorkoutPlan } from "@healthily-fit/shared";
 import { useAuthContext } from "./auth-context";
 import { useProfileContext } from "./profile-context";
@@ -37,16 +37,7 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user && profile) {
-      refreshPlans();
-    } else {
-      setActivePlan(null);
-      setAllPlans([]);
-    }
-  }, [user, profile]);
-
-  const refreshPlans = async () => {
+  const refreshPlans = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -63,9 +54,18 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  const generatePlan = async (): Promise<WorkoutPlan> => {
+  useEffect(() => {
+    if (user && profile) {
+      refreshPlans();
+    } else {
+      setActivePlan(null);
+      setAllPlans([]);
+    }
+  }, [user, profile, refreshPlans]);
+
+  const generatePlan = useCallback(async (): Promise<WorkoutPlan> => {
     if (!user || !profile) {
       throw new Error("User and profile must be available to generate plan");
     }
@@ -110,9 +110,9 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user, profile, activePlan]);
 
-  const createCustomPlan = async (
+  const createCustomPlan = useCallback(async (
     plan: Omit<WorkoutPlan, "id">
   ): Promise<WorkoutPlan> => {
     if (!user) throw new Error("User must be logged in to create a plan");
@@ -134,9 +134,9 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  const updatePlan = async (
+  const updatePlan = useCallback(async (
     planId: string,
     updates: Partial<Omit<WorkoutPlan, "id" | "userId">>
   ): Promise<WorkoutPlan> => {
@@ -160,9 +160,9 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activePlan]);
 
-  const deletePlan = async (planId: string): Promise<void> => {
+  const deletePlan = useCallback(async (planId: string): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -178,22 +178,22 @@ export function WorkoutProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activePlan]);
+
+  const value = useMemo(() => ({
+    activePlan,
+    allPlans,
+    createCustomPlan,
+    deletePlan,
+    error,
+    generatePlan,
+    isLoading,
+    refreshPlans,
+    updatePlan,
+  }), [activePlan, allPlans, createCustomPlan, deletePlan, error, generatePlan, isLoading, refreshPlans, updatePlan]);
 
   return (
-    <WorkoutContext.Provider
-      value={{
-        activePlan,
-        allPlans,
-        createCustomPlan,
-        deletePlan,
-        error,
-        generatePlan,
-        isLoading,
-        refreshPlans,
-        updatePlan,
-      }}
-    >
+    <WorkoutContext.Provider value={value}>
       {children}
     </WorkoutContext.Provider>
   );

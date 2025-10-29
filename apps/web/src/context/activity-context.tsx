@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import type { ActivityLog, ActivityLogInput } from "@healthily-fit/shared";
 import { createActivityLog } from "@/lib/firestore"; // adjust the import path
 import { useAuthContext } from "./auth-context";
@@ -27,7 +27,16 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const logWorkoutCompletion = async (
+  // Clear activity logs when user logs out
+  useEffect(() => {
+    if (!user) {
+      setActivityLogs([]);
+      setError(null);
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const logWorkoutCompletion = useCallback(async (
     workoutPlanId: string,
     dayNumber: number,
     exercisesCompleted: string[],
@@ -68,18 +77,18 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  const isWorkoutDayCompleted = (workoutPlanId: string, dayNumber: number): boolean => {
+  const isWorkoutDayCompleted = useCallback((workoutPlanId: string, dayNumber: number): boolean => {
     return activityLogs.some(
       (log) =>
         log.type === "workout" &&
         log.workoutPlanId === workoutPlanId &&
         log.notes?.includes(`Day ${dayNumber}`)
     );
-  };
+  }, [activityLogs]);
 
-  const getCompletedExercisesForDay = (workoutPlanId: string, dayNumber: number): string[] => {
+  const getCompletedExercisesForDay = useCallback((workoutPlanId: string, dayNumber: number): string[] => {
     const log = activityLogs.find(
       (log) =>
         log.type === "workout" &&
@@ -87,19 +96,19 @@ export const ActivityProvider = ({ children }: { children: ReactNode }) => {
         log.notes?.includes(`Day ${dayNumber}`)
     );
     return log?.exercisesCompleted || [];
-  };
+  }, [activityLogs]);
+
+  const value = useMemo(() => ({ 
+    activityLogs, 
+    logWorkoutCompletion, 
+    isWorkoutDayCompleted, 
+    getCompletedExercisesForDay,
+    isLoading, 
+    error 
+  }), [activityLogs, logWorkoutCompletion, isWorkoutDayCompleted, getCompletedExercisesForDay, isLoading, error]);
 
   return (
-    <ActivityContext.Provider
-      value={{ 
-        activityLogs, 
-        logWorkoutCompletion, 
-        isWorkoutDayCompleted, 
-        getCompletedExercisesForDay,
-        isLoading, 
-        error 
-      }}
-    >
+    <ActivityContext.Provider value={value}>
       {children}
     </ActivityContext.Provider>
   );

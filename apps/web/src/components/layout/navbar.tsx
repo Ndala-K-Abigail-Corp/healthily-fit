@@ -2,7 +2,6 @@ import { Dumbbell, Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavbar } from "@/hooks/use-navbar";
 import { cn } from "@/lib/utils";
