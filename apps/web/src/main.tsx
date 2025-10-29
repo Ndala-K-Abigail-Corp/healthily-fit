@@ -6,6 +6,7 @@ import { ActivityProvider } from "./context/activity-context";
 import { AuthProvider } from "./context/auth-context";
 import { OnboardingProvider } from "./context/onboarding-context";
 import { ProfileProvider } from "./context/profile-context";
+import { ThemeProvider } from "./context/theme-context";
 import { WorkoutProvider } from "./context/workout-context";
 import { LandingPage } from "./pages/landing";
 import { LoginPage } from "./pages/login";
@@ -28,7 +29,12 @@ import "./styles/globals.css";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/welcome" element={<SplashPage />} />
@@ -95,17 +101,19 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AuthProvider>
-      <ProfileProvider>
-        <WorkoutProvider>
-          <ActivityProvider>
-            <OnboardingProvider>
-              <App />
-            </OnboardingProvider>
-          </ActivityProvider>
-        </WorkoutProvider>
-      </ProfileProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <ProfileProvider>
+          <WorkoutProvider>
+            <ActivityProvider>
+              <OnboardingProvider>
+                <App />
+              </OnboardingProvider>
+            </ActivityProvider>
+          </WorkoutProvider>
+        </ProfileProvider>
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
 

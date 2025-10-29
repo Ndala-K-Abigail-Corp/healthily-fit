@@ -39,6 +39,7 @@ export function ProfileEditForm({
     formState: { errors },
     handleSubmit,
     register,
+    reset,
   } = useForm<ProfileInput>({
     defaultValues: {
       age: profile.age,
@@ -52,6 +53,20 @@ export function ProfileEditForm({
     },
     resolver: zodResolver(ProfileInputSchema),
   });
+
+  // Reset form to initial values when profile changes or on mount
+  useEffect(() => {
+    reset({
+      age: profile.age,
+      gender: profile.gender,
+      dietaryPreference: profile.dietaryPreference,
+      fitnessGoal: profile.fitnessGoal,
+      healthConditions: profile.healthConditions,
+      heightCm: profile.heightCm,
+      targetWeightKg: profile.targetWeightKg,
+      weightKg: profile.weightKg,
+    });
+  }, [profile, reset]);
 
   const toggleCondition = (condition: string) => {
     setSelectedConditions((prev) =>

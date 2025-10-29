@@ -325,11 +325,16 @@ export async function createActivityLog(
   try {
     const logRef = doc(collection(db, FIRESTORE_COLLECTIONS.ACTIVITY_LOGS));
 
+    // 🧹 Remove undefined fields before saving to Firestore
+    const cleanLog = Object.fromEntries(
+      Object.entries(log).filter(([_, v]) => v !== undefined)
+    );
+
     const logData = {
-      ...log,
+      ...cleanLog,
       id: logRef.id,
       userId: uid,
-      date: log.date,
+      date: log.date || new Date(),
       createdAt: serverTimestamp(),
     };
 

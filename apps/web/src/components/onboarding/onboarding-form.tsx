@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { ProfileInput } from "@healthily-fit/shared";
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +26,7 @@ export function OnboardingForm({ onSuccess }: OnboardingFormProps) {
     formData,
     goToNextStep,
     goToPreviousStep,
+    resetOnboarding,
     stepIndex,
     steps,
     updateFormData,
@@ -33,6 +34,15 @@ export function OnboardingForm({ onSuccess }: OnboardingFormProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // ✅ Reset form only once on mount
+  const hasReset = useRef(false);
+  useEffect(() => {
+    if (!hasReset.current) {
+      resetOnboarding();
+      hasReset.current = true;
+    }
+  }, []); // empty array ensures it runs once
 
   const handlePersonalInfoNext = (data: Partial<ProfileInput>) => {
     updateFormData(data);
@@ -55,7 +65,7 @@ export function OnboardingForm({ onSuccess }: OnboardingFormProps) {
       setError(null);
 
       await createProfile(formData as ProfileInput);
-      
+
       if (onSuccess) {
         onSuccess();
       } else {
@@ -123,4 +133,3 @@ export function OnboardingForm({ onSuccess }: OnboardingFormProps) {
     </div>
   );
 }
-

@@ -13,6 +13,7 @@ import {
   WorkoutPlanCard,
   WorkoutGeneratorDialog,
 } from "@/components/dashboard";
+import { ErrorBoundary } from "@/components/error-boundary";
 import { useActivityContext } from "@/context/activity-context";
 import { useAuthContext } from "@/context/auth-context";
 import { useProfileContext } from "@/context/profile-context";
@@ -47,24 +48,24 @@ export function DashboardPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-xl" style={{ gap: 'var(--space-xl)' }}>
-        {/* Header */}
+      <div className="space-y-6">
+        {/* Header Section */}
         <div className="animate-fadeIn">
-          <h1 className="font-heading text-3xl md:text-4xl font-bold" style={{ fontSize: 'var(--font-size-3xl)', lineHeight: 'var(--line-height-heading)' }}>
+          <h1 className="font-heading text-3xl md:text-4xl font-bold mb-2" style={{ fontSize: 'var(--font-size-3xl)', lineHeight: 'var(--line-height-heading)' }}>
             Welcome back, {user?.displayName || "there"}! 👋
           </h1>
-          <p className="text-neutral-600 mt-sm text-lg" style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-neutral-600)' }}>
+          <p className="text-neutral-600 text-lg" style={{ fontSize: 'var(--font-size-lg)', color: 'var(--color-neutral-600)' }}>
             Here's your fitness progress overview
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg animate-slideUp">
+        {/* Stats Grid - Top Priority */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slideUp">
           <StatsCard
-            icon={Activity}
-            title="Current BMI"
-            value={bmi.toFixed(1)}
-            description={`Category: ${bmiCategory}`}
+            icon={Flame}
+            title="Workouts This Week"
+            value={workoutsThisWeek.toString()}
+            description="Keep up the momentum!"
           />
           <StatsCard
             icon={Target}
@@ -72,119 +73,118 @@ export function DashboardPage() {
             value={`${profile.weightKg} kg`}
             description={
               profile.targetWeightKg
-                ? `Target: ${profile.targetWeightKg} kg`
-                : "No target set"
+                ? `Goal: ${profile.targetWeightKg} kg`
+                : "Set your target"
             }
           />
           <StatsCard
-            icon={Flame}
-            title="Workouts Completed"
-            value={workoutsThisWeek.toString()}
-            description="This week"
+            icon={Activity}
+            title="BMI"
+            value={bmi.toFixed(1)}
+            description={bmiCategory}
           />
           <StatsCard
             icon={TrendingUp}
             title="Fitness Goal"
             value={formattedGoal}
-            description={`Diet: ${profile.dietaryPreference}`}
+            description={profile.dietaryPreference}
           />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-          {/* Active Workout Plan */}
-          <div className="animate-slideUp [animation-delay:100ms]">
-            {activePlan ? (
-              <WorkoutPlanCard plan={activePlan} />
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-sm">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    Active Workout Plan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-xl space-y-md">
-                    {/* 
-                      TODO: Replace with themed image
-                      Pinterest: https://www.pinterest.com/search/pins/?q=workout%20plan%20calendar%20fitness
-                      Keywords: "fitness planner", "workout schedule", "training calendar"
-                    */}
-                    <img
-                      src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=300&h=200&fit=crop"
-                      alt="Create your personalized workout plan"
-                      className="mx-auto rounded-lg max-w-xs w-full object-cover"
-                      loading="lazy"
-                    />
-                    <div>
-                      <p className="font-semibold text-lg">No active workout plan</p>
-                      <p className="text-sm text-neutral-600 mt-sm">
-                        Generate your personalized plan to get started
-                      </p>
-                    </div>
-                    <Button
-                      className="mt-md"
-                      onClick={() => setShowGeneratorDialog(true)}
-                    >
-                      Generate Workout Plan
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Recent Activity */}
-          <div className="animate-slideUp [animation-delay:200ms]">
-            <RecentActivity />
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-          {/* Weight Progress Chart */}
-          <div className="animate-slideUp [animation-delay:300ms]">
-            <ProgressChart currentWeight={profile.weightKg} />
-          </div>
-
-          {/* Weekly Activity Chart - Placeholder */}
-          <Card className="animate-slideUp [animation-delay:400ms]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-sm">
-                <BarChart3 className="w-5 h-5 text-primary" />
-                Weekly Activity
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex flex-col items-center justify-center space-y-md">
-                <div className="w-full h-48 bg-neutral-100 rounded-lg p-md flex items-end justify-around gap-xs">
-                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
-                    (day, index) => (
-                      <div
-                        key={day}
-                        className="flex flex-col items-center flex-1"
-                      >
-                        <div
-                          className="w-full bg-primary/30 rounded-t transition-all duration-medium hover:bg-primary"
-                          style={{ height: "10%" }}
-                        />
-                        <span className="text-xs text-neutral-600 mt-xs">
-                          {day}
-                        </span>
+        {/* Main Content - Two Column Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Left Column - Larger (2/3) */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Active Workout Plan */}
+            <div className="animate-slideUp [animation-delay:100ms]">
+              <ErrorBoundary>
+                {activePlan ? (
+                  <WorkoutPlanCard plan={activePlan} />
+                ) : (
+                <Card className="border-2 border-dashed border-neutral-300 hover:border-primary transition-colors">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      Active Workout Plan
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8 space-y-4">
+                      <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                        <Plus className="w-10 h-10 text-primary" />
                       </div>
-                    )
-                  )}
+                      <div>
+                        <p className="font-semibold text-lg">No active workout plan</p>
+                        <p className="text-sm text-neutral-600 mt-2">
+                          Generate your personalized plan to get started on your fitness journey
+                        </p>
+                      </div>
+                      <Button
+                        size="lg"
+                        onClick={() => setShowGeneratorDialog(true)}
+                        className="mt-4"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Generate Workout Plan
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              </ErrorBoundary>
+            </div>
+
+            {/* Weight Progress Chart */}
+            <div className="animate-slideUp [animation-delay:300ms]">
+              <ProgressChart currentWeight={profile.weightKg} />
+            </div>
+          </div>
+
+          {/* Right Column - Smaller (1/3) */}
+          <div className="space-y-6">
+            {/* Recent Activity */}
+            <div className="animate-slideUp [animation-delay:200ms]">
+              <RecentActivity />
+            </div>
+
+            {/* Weekly Activity Chart - Compact */}
+            <Card className="animate-slideUp [animation-delay:400ms]">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <BarChart3 className="w-5 h-5 text-primary" />
+                  This Week
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-48 flex flex-col items-center justify-center">
+                  <div className="w-full h-32 bg-neutral-100 rounded-lg p-2 flex items-end justify-around gap-1">
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+                      (day, index) => (
+                        <div
+                          key={`weekday-${index}-${day}`}
+                          className="flex flex-col items-center flex-1"
+                        >
+                          <div
+                            className="w-full bg-primary/30 rounded-t transition-all duration-medium hover:bg-primary"
+                            style={{ height: "10%" }}
+                          />
+                          <span className="text-xs text-neutral-600 mt-1">
+                            {day.charAt(0)}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                  <p className="text-xs text-neutral-600 mt-3 text-center">
+                    Log workouts to track activity
+                  </p>
                 </div>
-                <p className="text-sm text-neutral-600">
-                  Log workouts to see your weekly activity
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* BMI Trend Visualization */}
+        {/* BMI & Health Insights - Full Width */}
         <Card className="animate-slideUp [animation-delay:500ms]">
           <CardHeader>
             <CardTitle className="flex items-center gap-sm">

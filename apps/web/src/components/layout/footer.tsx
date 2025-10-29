@@ -5,8 +5,11 @@ export function Footer() {
   const navigate = useNavigate();
 
   const handleLinkClick = (path: string) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTimeout(() => navigate(path), 300);
+    navigate(path);
+    // Scroll to top immediately after navigation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
   };
 
   return (

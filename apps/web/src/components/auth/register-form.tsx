@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -62,12 +62,18 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     handleSubmit,
     register,
     watch,
+    reset,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
   });
 
   // Watch password field for strength indicator
   const passwordValue = watch("password", "");
+
+  // Clear form on component mount (page refresh)
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   const onSubmit = async (data: RegisterFormData) => {
     try {

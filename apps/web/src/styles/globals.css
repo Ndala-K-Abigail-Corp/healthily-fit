@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Colors - GymBase Green Theme */
+    /* Colors - Light Mode (GymBase Green Theme) */
     --color-primary: #00c853;
     --color-primary-hover: #00b248;
     --color-accent: #007e33;
@@ -54,6 +54,25 @@
     --duration-medium: 300ms;
     --duration-slow: 600ms;
     --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    /* Dark Mode Colors */
+    --color-neutral-100: #111111;
+    --color-neutral-200: #1e1e1e;
+    --color-neutral-300: #2d2d2d;
+    --color-neutral-600: #a1a1a1;
+    --color-neutral-700: #d4d4d4;
+    --color-neutral-800: #e5e5e5;
+    --color-neutral-900: #ffffff;
+    --color-background-light: #0a0a0a;
+    --color-background-dark: #1b1b1b;
+    
+    /* Keep primary colors consistent in dark mode */
+    --color-primary: #00e676;
+    --color-primary-hover: #00c853;
+    --color-accent: #00b248;
+    --color-accent-hover: #009e3f;
   }
 
   * {

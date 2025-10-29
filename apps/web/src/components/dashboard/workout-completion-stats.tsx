@@ -12,7 +12,14 @@ export function WorkoutCompletionStats({
   activityLogs,
   totalPlannedWorkouts = 12,
 }: WorkoutCompletionStatsProps) {
-  const workoutLogs = activityLogs.filter((log) => log.type === "workout");
+  // Filter workout logs and parse dates safely
+  const workoutLogs = activityLogs
+    .filter((log) => log.type === "workout")
+    .map((log) => ({
+      ...log,
+      dateObj: log.date ? new Date(log.date) : new Date(),
+    }));
+
   const totalCompleted = workoutLogs.length;
   const completionRate =
     totalPlannedWorkouts > 0
@@ -23,14 +30,14 @@ export function WorkoutCompletionStats({
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
   const thisWeekWorkouts = workoutLogs.filter(
-    (log) => new Date(log.date) >= oneWeekAgo
+    (log) => log.dateObj >= oneWeekAgo
   ).length;
 
   // Calculate this month's workouts
   const oneMonthAgo = new Date();
   oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
   const thisMonthWorkouts = workoutLogs.filter(
-    (log) => new Date(log.date) >= oneMonthAgo
+    (log) => log.dateObj >= oneMonthAgo
   ).length;
 
   // Calculate average per week
@@ -39,7 +46,7 @@ export function WorkoutCompletionStats({
     ? Math.max(
         1,
         Math.ceil(
-          (new Date().getTime() - new Date(firstWorkout.date).getTime()) /
+          (new Date().getTime() - firstWorkout.dateObj.getTime()) /
             (7 * 24 * 60 * 60 * 1000)
         )
       )
@@ -47,7 +54,8 @@ export function WorkoutCompletionStats({
   const avgPerWeek = (totalCompleted / weeksActive).toFixed(1);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      {/* Total Completed */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-neutral-600">
@@ -67,6 +75,7 @@ export function WorkoutCompletionStats({
         </CardContent>
       </Card>
 
+      {/* This Week */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-neutral-600">
@@ -86,6 +95,27 @@ export function WorkoutCompletionStats({
         </CardContent>
       </Card>
 
+      {/* This Month */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium text-neutral-600">
+            This Month
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-secondary" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold">{thisMonthWorkouts}</p>
+              <p className="text-xs text-neutral-600">workouts</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Completion Rate */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-neutral-600">
@@ -105,6 +135,7 @@ export function WorkoutCompletionStats({
         </CardContent>
       </Card>
 
+      {/* Weekly Average */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium text-neutral-600">
@@ -126,4 +157,3 @@ export function WorkoutCompletionStats({
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -29,9 +29,15 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     formState: { errors },
     handleSubmit,
     register,
+    reset,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
+
+  // Clear form on component mount (page refresh)
+  useEffect(() => {
+    reset();
+  }, [reset]);
 
   const onSubmit = async (data: LoginFormData) => {
     try {

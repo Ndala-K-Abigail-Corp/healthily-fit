@@ -1,19 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-
+import { createContext, useContext, useState, ReactNode } from "react";
 import type { ActivityLog, ActivityLogInput } from "@healthily-fit/shared";
-
+import { createActivityLog } from "@/lib/firestore"; // adjust the import path
 import { useAuthContext } from "./auth-context";
-import {
-  createActivityLog,
-  fetchActivityLogs,
-  updateActivityLog,
-  deleteActivityLog,
-} from "@/lib/firestore";
 
-interface ActivityContextValue {
+interface ActivityContextType {
   activityLogs: ActivityLog[];
-  isLoading: boolean;
-  error: string | null;
   logWorkoutCompletion: (
     workoutPlanId: string,
     dayNumber: number,
@@ -22,55 +13,19 @@ interface ActivityContextValue {
     durationMinutes: number,
     weightKg?: number
   ) => Promise<ActivityLog>;
-  logExerciseCompletion: (
-    workoutPlanId: string,
-    dayNumber: number,
-    exerciseId: string
-  ) => Promise<void>;
-  fetchUserActivities: (startDate?: Date, endDate?: Date) => Promise<void>;
   isWorkoutDayCompleted: (workoutPlanId: string, dayNumber: number) => boolean;
   getCompletedExercisesForDay: (workoutPlanId: string, dayNumber: number) => string[];
-  refreshActivities: () => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
 }
 
-const ActivityContext = createContext<ActivityContextValue | undefined>(
-  undefined
-);
+const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
 
-export function ActivityProvider({ children }: { children: React.ReactNode }) {
+export const ActivityProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuthContext();
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Fetch activities when user changes
-  useEffect(() => {
-    if (user) {
-      fetchUserActivities();
-    } else {
-      setActivityLogs([]);
-    }
-  }, [user?.uid]);
-
-  const fetchUserActivities = async (startDate?: Date, endDate?: Date) => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      const logs = await fetchActivityLogs(user.uid, startDate, endDate);
-      setActivityLogs(logs);
-    } catch (err: any) {
-      console.error("Error fetching activities:", err);
-      setError(err.message || "Failed to fetch activities");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refreshActivities = async () => {
-    await fetchUserActivities();
-  };
 
   const logWorkoutCompletion = async (
     workoutPlanId: string,
@@ -81,6 +36,11 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
     weightKg?: number
   ): Promise<ActivityLog> => {
     if (!user) throw new Error("User must be logged in");
+
+    if (exercisesCompleted.length === 0) throw new Error("At least one exercise must be completed");
+    if (caloriesBurned <= 0) throw new Error("Calories burned must be greater than 0");
+    if (durationMinutes <= 0) throw new Error("Duration must be greater than 0 minutes");
+    if (weightKg !== undefined && weightKg <= 0) throw new Error("Weight (kg) must be greater than 0");
 
     try {
       setIsLoading(true);
@@ -94,7 +54,7 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
         workoutPlanId,
         exercisesCompleted,
         notes: `Completed Day ${dayNumber}`,
-        weightKg,
+        weightKg: weightKg,
       };
 
       const newLog = await createActivityLog(user.uid, logInput);
@@ -103,116 +63,53 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
       return newLog;
     } catch (err: any) {
       console.error("Error logging workout completion:", err);
-      setError(err.message || "Failed to log workout");
+      setError(err?.message ?? "Failed to log workout");
       throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logExerciseCompletion = async (
-    workoutPlanId: string,
-    dayNumber: number,
-    exerciseId: string
-  ): Promise<void> => {
-    if (!user) throw new Error("User must be logged in");
-
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Find existing log for this workout day
-      const existingLog = activityLogs.find(
-        (log) =>
-          log.workoutPlanId === workoutPlanId &&
-          log.notes?.includes(`Day ${dayNumber}`)
-      );
-
-      if (existingLog) {
-        // Update existing log with new exercise
-        const updatedExercises = existingLog.exercisesCompleted.includes(exerciseId)
-          ? existingLog.exercisesCompleted
-          : [...existingLog.exercisesCompleted, exerciseId];
-
-        const updated = await updateActivityLog(existingLog.id, {
-          exercisesCompleted: updatedExercises,
-        });
-
-        setActivityLogs((prev) =>
-          prev.map((log) => (log.id === updated.id ? updated : log))
-        );
-      } else {
-        // Create new partial log
-        const logInput: ActivityLogInput = {
-          date: new Date(),
-          type: "workout",
-          durationMinutes: 0, // Will be updated when fully completed
-          workoutPlanId,
-          exercisesCompleted: [exerciseId],
-          notes: `Partial completion - Day ${dayNumber}`,
-        };
-
-        const newLog = await createActivityLog(user.uid, logInput);
-        setActivityLogs((prev) => [newLog, ...prev]);
-      }
-    } catch (err: any) {
-      console.error("Error logging exercise completion:", err);
-      setError(err.message || "Failed to log exercise");
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const isWorkoutDayCompleted = (
-    workoutPlanId: string,
-    dayNumber: number
-  ): boolean => {
+  const isWorkoutDayCompleted = (workoutPlanId: string, dayNumber: number): boolean => {
     return activityLogs.some(
       (log) =>
-        log.workoutPlanId === workoutPlanId &&
-        log.notes?.includes(`Day ${dayNumber}`) &&
-        !log.notes?.includes("Partial")
-    );
-  };
-
-  const getCompletedExercisesForDay = (
-    workoutPlanId: string,
-    dayNumber: number
-  ): string[] => {
-    const log = activityLogs.find(
-      (log) =>
+        log.type === "workout" &&
         log.workoutPlanId === workoutPlanId &&
         log.notes?.includes(`Day ${dayNumber}`)
     );
+  };
 
+  const getCompletedExercisesForDay = (workoutPlanId: string, dayNumber: number): string[] => {
+    const log = activityLogs.find(
+      (log) =>
+        log.type === "workout" &&
+        log.workoutPlanId === workoutPlanId &&
+        log.notes?.includes(`Day ${dayNumber}`)
+    );
     return log?.exercisesCompleted || [];
   };
 
-  const value: ActivityContextValue = {
-    activityLogs,
-    isLoading,
-    error,
-    logWorkoutCompletion,
-    logExerciseCompletion,
-    fetchUserActivities,
-    isWorkoutDayCompleted,
-    getCompletedExercisesForDay,
-    refreshActivities,
-  };
-
   return (
-    <ActivityContext.Provider value={value}>
+    <ActivityContext.Provider
+      value={{ 
+        activityLogs, 
+        logWorkoutCompletion, 
+        isWorkoutDayCompleted, 
+        getCompletedExercisesForDay,
+        isLoading, 
+        error 
+      }}
+    >
       {children}
     </ActivityContext.Provider>
   );
-}
+};
 
-export function useActivityContext() {
+// ✅ Hook to use the context
+export const useActivityContext = () => {
   const context = useContext(ActivityContext);
-  if (context === undefined) {
-    throw new Error("useActivityContext must be used within an ActivityProvider");
+  if (!context) {
+    throw new Error("useActivityContext must be used within ActivityProvider");
   }
   return context;
-}
-
+};

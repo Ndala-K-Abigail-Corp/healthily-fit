@@ -1,5 +1,6 @@
 export { CaloriesBurnedChart } from "./calories-burned-chart";
 export { DashboardLayout } from "./dashboard-layout";
+export { DashboardSidebar } from "./dashboard-sidebar";
 export { ProgressChart } from "./progress-chart";
 export { QuickActions } from "./quick-actions";
 export { RecentActivity } from "./recent-activity";

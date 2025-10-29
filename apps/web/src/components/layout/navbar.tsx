@@ -2,6 +2,7 @@ import { Dumbbell, Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavbar } from "@/hooks/use-navbar";
 import { cn } from "@/lib/utils";
@@ -82,36 +83,11 @@ export function Navbar() {
                 {user ? "Dashboard" : "Home"}
               </Link>
             )}
-            {user && (
-              <>
-              <Link
-                to="/dashboard"
-                className={cn(
-                  "text-sm font-medium transition-colors duration-fast",
-                  location.pathname === "/dashboard"
-                    ? "text-primary"
-                    : "text-neutral-100 hover:text-primary"
-                )}
-              >
-                Dashboard
-              </Link>
-                <Link
-                  to="/dashboard/profile"
-                  className={cn(
-                    "text-sm font-medium transition-colors duration-fast",
-                    location.pathname === "/dashboard/profile"
-                      ? "text-primary"
-                      : "text-neutral-100 hover:text-primary"
-                  )}
-                >
-                  Profile
-                </Link>
-              </>
-            )}
           </div>
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-sm">
+            {/* Theme toggle hidden - light mode only */}
             {user ? (
               <>
                 <Link to="/dashboard/profile">
@@ -196,37 +172,9 @@ export function Navbar() {
               </Link>
             )}
 
-            {user && (
-              <>
-              <Link
-                to="/dashboard"
-                onClick={closeMenu}
-                className={cn(
-                  "block py-2 px-4 rounded-md transition-colors duration-fast",
-                  location.pathname === "/dashboard"
-                    ? "bg-primary/10 text-primary"
-                    : "text-neutral-100 hover:bg-neutral-800 hover:text-primary"
-                )}
-              >
-                Dashboard
-              </Link>
-                <Link
-                  to="/dashboard/profile"
-                  onClick={closeMenu}
-                  className={cn(
-                    "block py-2 px-4 rounded-md transition-colors duration-fast",
-                    location.pathname === "/dashboard/profile"
-                      ? "bg-primary/10 text-primary"
-                      : "text-neutral-100 hover:bg-neutral-800 hover:text-primary"
-                  )}
-                >
-                  Profile
-                </Link>
-              </>
-            )}
-
             {/* Mobile Auth Buttons */}
             <div className="pt-4 border-t border-neutral-800 space-y-2">
+              {/* Theme toggle hidden - light mode only */}
               {user ? (
                 <>
                   <div className="text-sm text-neutral-300 px-4 py-2">

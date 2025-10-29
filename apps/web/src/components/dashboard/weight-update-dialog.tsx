@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Scale } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -24,16 +24,25 @@ export function WeightUpdateDialog({
   onOpenChange,
   onComplete,
 }: WeightUpdateDialogProps) {
-  const { profile, updateUserProfile } = useProfileContext();
+  const { profile, updateProfile } = useProfileContext();
   const [weight, setWeight] = useState(profile?.weightKg?.toString() || "");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Reset weight input whenever dialog opens
+  useEffect(() => {
+    if (open) {
+      setWeight(profile?.weightKg?.toString() || "");
+      setError(null);
+    }
+  }, [open, profile?.weightKg]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    const weightValue = parseFloat(weight);
+    const trimmedWeight = weight.trim();
+    const weightValue = parseFloat(trimmedWeight);
 
     if (isNaN(weightValue) || weightValue < 20 || weightValue > 500) {
       setError("Please enter a valid weight between 20 and 500 kg");
@@ -42,7 +51,7 @@ export function WeightUpdateDialog({
 
     try {
       setIsLoading(true);
-      await updateUserProfile({ weightKg: weightValue });
+      await updateProfile({ weightKg: parseFloat(weightValue.toFixed(1)) });
       onOpenChange(false);
       onComplete();
     } catch (err: any) {
@@ -82,6 +91,7 @@ export function WeightUpdateDialog({
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               disabled={isLoading}
+              autoFocus
             />
             {error && <p className="text-sm text-error">{error}</p>}
           </div>
@@ -109,4 +119,3 @@ export function WeightUpdateDialog({
     </Dialog>
   );
 }
-

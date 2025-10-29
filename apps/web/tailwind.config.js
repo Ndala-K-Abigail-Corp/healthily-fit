@@ -3,7 +3,7 @@ import designTokens from "../../docs/design-tokens.json";
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
-  darkMode: ["class"],
+  darkMode: "class",
   theme: {
     container: {
       center: true,
@@ -41,6 +41,14 @@ export default {
         border: "var(--color-neutral-300)",
         input: "var(--color-neutral-200)",
         ring: "var(--color-accent)",
+        muted: {
+          DEFAULT: "var(--color-neutral-200)",
+          foreground: "var(--color-neutral-600)",
+        },
+        popover: {
+          DEFAULT: "var(--color-neutral-100)",
+          foreground: "var(--color-neutral-900)",
+        },
       },
       fontFamily: {
         sans: ["var(--font-family-base)", "system-ui", "sans-serif"],

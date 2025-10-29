@@ -1,15 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Calendar, CheckCircle2, Clock, Edit2, Flame, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { WorkoutPlan } from "@healthily-fit/shared";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  calculatePlanProgress,
-  getCurrentWeekWorkouts,
-  formatDayOfWeek,
-} from "@/lib/workout-utils";
+import { calculatePlanProgress, getCurrentWeekWorkouts, formatDayOfWeek } from "@/lib/workout-utils";
 import { useActivityContext } from "@/context/activity-context";
 import { WeightUpdateDialog } from "./weight-update-dialog";
 
@@ -19,10 +15,8 @@ interface WorkoutPlanCardProps {
 }
 
 export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
-  const progress = calculatePlanProgress(plan);
-  const currentWeekWorkouts = getCurrentWeekWorkouts(plan);
   const { logWorkoutCompletion, isWorkoutDayCompleted } = useActivityContext();
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [showWeightDialog, setShowWeightDialog] = useState(false);
   const [completingWorkout, setCompletingWorkout] = useState<{
@@ -32,59 +26,53 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     duration: number;
   } | null>(null);
 
-  const startDate = new Date(plan.startDate);
-  const endDate = new Date(plan.endDate);
+  const startDate = useMemo(() => new Date(plan.startDate), [plan.startDate]);
+  const endDate = useMemo(() => new Date(plan.endDate), [plan.endDate]);
 
-  const formattedStart = startDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-  const formattedEnd = endDate.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
+  const formattedStart = useMemo(
+    () => startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    [startDate]
+  );
+  const formattedEnd = useMemo(
+    () => endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    [endDate]
+  );
 
-  const handleMarkComplete = async (dayNumber: number) => {
+  const progress = useMemo(() => calculatePlanProgress(plan), [plan]);
+  const currentWeekWorkouts = useMemo(() => getCurrentWeekWorkouts(plan), [plan]);
+
+  const handleMarkComplete = (dayNumber: number) => {
     const workout = plan.dailyWorkouts.find((w) => w.dayNumber === dayNumber);
     if (!workout) return;
 
-    const exerciseIds = workout.exercises.map((ex) => ex.exerciseId);
-    const calories = workout.targetCalories || 0;
-    const duration = workout.estimatedDurationMinutes || 0;
-
-    try {
-      setIsLoading(true);
-      
-      // Store workout data and show weight dialog
-      setCompletingWorkout({
-        dayNumber,
-        exercises: exerciseIds,
-        calories,
-        duration,
-      });
-      setShowWeightDialog(true);
-    } catch (error) {
-      console.error("Error marking workout complete:", error);
-      setIsLoading(false);
-    }
+    setCompletingWorkout({
+      dayNumber,
+      exercises: workout.exercises.map((ex) => String(ex.exerciseId)),
+      calories: workout.targetCalories || 0,
+      duration: workout.estimatedDurationMinutes || 0,
+    });
+    setShowWeightDialog(true);
   };
 
-  const handleWeightDialogComplete = async () => {
+  const handleWeightDialogComplete = async (weightKg?: number) => {
     if (!completingWorkout) return;
 
     try {
+      setIsLoading(true);
       await logWorkoutCompletion(
         plan.id,
         completingWorkout.dayNumber,
         completingWorkout.exercises,
         completingWorkout.calories,
-        completingWorkout.duration
+        completingWorkout.duration,
+        weightKg
       );
     } catch (error) {
       console.error("Error completing workout log:", error);
     } finally {
       setIsLoading(false);
       setCompletingWorkout(null);
+      setShowWeightDialog(false);
     }
   };
 
@@ -93,13 +81,11 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-sm">
-            <Calendar className="w-5 h-5 text-primary" />
-            Active Workout Plan
+            <Calendar className="w-5 h-5 text-primary" /> Active Workout Plan
           </CardTitle>
           {onEdit && (
             <Button variant="outline" size="sm" onClick={onEdit}>
-              <Edit2 className="w-4 h-4 mr-2" />
-              Edit
+              <Edit2 className="w-4 h-4 mr-2" /> Edit
             </Button>
           )}
         </div>
@@ -109,9 +95,7 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-neutral-600" />
-            <span className="text-neutral-600">
-              {formattedStart} - {formattedEnd}
-            </span>
+            <span className="text-neutral-600">{formattedStart} - {formattedEnd}</span>
           </div>
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-success" />
@@ -122,31 +106,24 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
         {/* Progress Bar */}
         <div className="w-full bg-neutral-200 rounded-full h-2">
           <div
-            className="bg-primary rounded-full h-2 transition-all duration-medium"
-            style={{ width: `${progress}%` }}
+            className="bg-primary rounded-full h-2"
+            style={{ width: `${progress}%`, transition: 'width 0.5s ease' }}
           />
         </div>
 
         {/* Plan Stats */}
         <div className="grid grid-cols-3 gap-4 py-3 border-y border-neutral-200">
           <div className="text-center">
-            <div className="text-2xl font-bold text-primary">
-              {plan.totalWeeks}
-            </div>
+            <div className="text-2xl font-bold text-primary">{plan.totalWeeks}</div>
             <div className="text-xs text-neutral-600 mt-1">Weeks</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-accent">
-              {plan.dailyWorkouts.length}
-            </div>
+            <div className="text-2xl font-bold text-accent">{plan.dailyWorkouts.length}</div>
             <div className="text-xs text-neutral-600 mt-1">Workouts</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-success">
-              {plan.dailyWorkouts.reduce(
-                (sum, w) => sum + w.exercises.length,
-                0
-              )}
+              {plan.dailyWorkouts.reduce((sum, w) => sum + w.exercises.length, 0)}
             </div>
             <div className="text-xs text-neutral-600 mt-1">Exercises</div>
           </div>
@@ -159,31 +136,22 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
             <div className="space-y-2">
               {currentWeekWorkouts.map((workout) => {
                 const isCompleted = isWorkoutDayCompleted(plan.id, workout.dayNumber);
-                
                 return (
                   <div
                     key={workout.dayNumber}
                     className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
-                      isCompleted
-                        ? "bg-success/10 border border-success/20"
-                        : "bg-neutral-50 hover:bg-neutral-100"
+                      isCompleted ? "bg-success/10 border border-success/20" : "bg-neutral-50 hover:bg-neutral-100"
                     }`}
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        {isCompleted && (
-                          <CheckCircle2 className="w-4 h-4 text-success" />
-                        )}
+                        {isCompleted && <CheckCircle2 className="w-4 h-4 text-success" />}
                         <span className={`font-semibold text-sm ${isCompleted ? "text-success" : ""}`}>
                           {formatDayOfWeek(workout.dayOfWeek)}
                         </span>
-                        <span className="text-xs text-neutral-500">
-                          Day {workout.dayNumber}
-                        </span>
+                        <span className="text-xs text-neutral-500">Day {workout.dayNumber}</span>
                       </div>
-                      <p className="text-xs text-neutral-600 mt-1">
-                        {workout.title}
-                      </p>
+                      <p className="text-xs text-neutral-600 mt-1">{workout.title}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-4 text-xs text-neutral-600">
@@ -205,7 +173,7 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
                           onClick={() => handleMarkComplete(workout.dayNumber)}
                           disabled={isLoading}
                         >
-                          Complete
+                          {isLoading ? "Logging..." : "Complete"}
                         </Button>
                       )}
                     </div>
@@ -223,23 +191,16 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <Link to="/dashboard/workouts" className="flex-1">
-            <Button variant="default" className="w-full">
-              View Full Plan
-            </Button>
+            <Button variant="default" className="w-full">View Full Plan</Button>
           </Link>
           {progress === 100 && (
             <Button variant="outline" className="gap-2">
-              <CheckCircle2 className="w-4 h-4" />
-              Mark Complete
+              <CheckCircle2 className="w-4 h-4" /> Mark Complete
             </Button>
           )}
         </div>
 
-        {plan.notes && (
-          <p className="text-xs text-neutral-500 italic pt-2 border-t">
-            {plan.notes}
-          </p>
-        )}
+        {plan.notes && <p className="text-xs text-neutral-500 italic pt-2 border-t">{plan.notes}</p>}
       </CardContent>
 
       <WeightUpdateDialog
@@ -250,4 +211,3 @@ export function WorkoutPlanCard({ plan, onEdit }: WorkoutPlanCardProps) {
     </Card>
   );
 }
-

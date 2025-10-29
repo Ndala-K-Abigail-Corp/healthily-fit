@@ -349,11 +349,21 @@ export function WorkoutEditor({
                               min="1"
                               max="10"
                               value={exercise.sets}
-                              onChange={(e) =>
-                                updateExercise(workout.dayNumber, exerciseIdx, {
-                                  sets: parseInt(e.target.value) || 1,
-                                })
-                              }
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  updateExercise(workout.dayNumber, exerciseIdx, {
+                                    sets: 1,
+                                  });
+                                } else {
+                                  const parsed = parseInt(value);
+                                  if (!isNaN(parsed) && parsed >= 1) {
+                                    updateExercise(workout.dayNumber, exerciseIdx, {
+                                      sets: parsed,
+                                    });
+                                  }
+                                }
+                              }}
                               disabled={isLoading}
                             />
                           </div>
@@ -369,12 +379,22 @@ export function WorkoutEditor({
                               type="number"
                               min="0"
                               max="100"
-                              value={exercise.reps || ""}
-                              onChange={(e) =>
-                                updateExercise(workout.dayNumber, exerciseIdx, {
-                                  reps: parseInt(e.target.value) || undefined,
-                                })
-                              }
+                              value={exercise.reps ?? ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  updateExercise(workout.dayNumber, exerciseIdx, {
+                                    reps: undefined,
+                                  });
+                                } else {
+                                  const parsed = parseInt(value);
+                                  if (!isNaN(parsed) && parsed >= 0) {
+                                    updateExercise(workout.dayNumber, exerciseIdx, {
+                                      reps: parsed,
+                                    });
+                                  }
+                                }
+                              }}
                               placeholder="Optional"
                               disabled={isLoading}
                             />
@@ -391,13 +411,22 @@ export function WorkoutEditor({
                               type="number"
                               min="0"
                               max="120"
-                              value={exercise.durationMinutes || ""}
-                              onChange={(e) =>
-                                updateExercise(workout.dayNumber, exerciseIdx, {
-                                  durationMinutes:
-                                    parseInt(e.target.value) || undefined,
-                                })
-                              }
+                              value={exercise.durationMinutes ?? ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  updateExercise(workout.dayNumber, exerciseIdx, {
+                                    durationMinutes: undefined,
+                                  });
+                                } else {
+                                  const parsed = parseInt(value);
+                                  if (!isNaN(parsed) && parsed >= 0) {
+                                    updateExercise(workout.dayNumber, exerciseIdx, {
+                                      durationMinutes: parsed,
+                                    });
+                                  }
+                                }
+                              }}
                               placeholder="Optional"
                               disabled={isLoading}
                             />
@@ -415,11 +444,21 @@ export function WorkoutEditor({
                               min="0"
                               max="300"
                               value={exercise.restSeconds}
-                              onChange={(e) =>
-                                updateExercise(workout.dayNumber, exerciseIdx, {
-                                  restSeconds: parseInt(e.target.value) || 60,
-                                })
-                              }
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "") {
+                                  updateExercise(workout.dayNumber, exerciseIdx, {
+                                    restSeconds: 60,
+                                  });
+                                } else {
+                                  const parsed = parseInt(value);
+                                  if (!isNaN(parsed) && parsed >= 0) {
+                                    updateExercise(workout.dayNumber, exerciseIdx, {
+                                      restSeconds: parsed,
+                                    });
+                                  }
+                                }
+                              }}
                               disabled={isLoading}
                             />
                           </div>

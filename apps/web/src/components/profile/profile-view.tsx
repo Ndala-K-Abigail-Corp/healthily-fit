@@ -58,53 +58,57 @@ export function ProfileView({ profile }: ProfileViewProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="font-heading text-2xl font-bold">My Profile</h2>
-          <p className="text-neutral-600 mt-sm">
+          <h2 className="font-heading text-3xl font-bold" style={{ fontSize: 'var(--font-size-3xl)' }}>
+            My Profile
+          </h2>
+          <p className="text-neutral-600 mt-2" style={{ fontSize: 'var(--font-size-md)' }}>
             Your health and fitness information
           </p>
         </div>
-        <Button onClick={() => setIsEditing(true)} className="gap-2">
+        <Button onClick={() => setIsEditing(true)} className="gap-2" size="lg">
           <Edit2 className="w-4 h-4" />
           Edit Profile
         </Button>
       </div>
 
       {/* BMI Overview Card */}
-      <Card className="border-primary/20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-primary" />
+      <Card className="border-l-4 border-primary shadow-lg animate-slideUp">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
+          <CardTitle className="flex items-center gap-2" style={{ fontSize: 'var(--font-size-xl)' }}>
+            <Activity className="w-6 h-6 text-primary" />
             Health Overview
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className={`text-4xl font-bold ${bmiColor}`}>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="text-center p-4 rounded-lg bg-gradient-to-br from-primary/5 to-transparent border border-primary/20">
+              <div className={`text-5xl font-bold ${bmiColor}`} style={{ fontSize: 'var(--font-size-3xl)' }}>
                 {bmi.toFixed(1)}
               </div>
-              <div className="text-sm text-neutral-600 mt-xs">BMI</div>
-              <div className={`text-xs font-medium mt-1 ${bmiColor}`}>
+              <div className="text-sm text-neutral-600 mt-2" style={{ fontSize: 'var(--font-size-sm)' }}>
+                BMI
+              </div>
+              <div className={`text-sm font-semibold mt-1 ${bmiColor}`}>
                 {bmiCategory}
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-neutral-900">
+            <div className="text-center p-4 rounded-lg bg-neutral-50">
+              <div className="text-5xl font-bold text-neutral-900" style={{ fontSize: 'var(--font-size-3xl)' }}>
                 {profile.weightKg}
               </div>
-              <div className="text-sm text-neutral-600 mt-xs">
+              <div className="text-sm text-neutral-600 mt-2">
                 Current Weight (kg)
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-neutral-900">
+            <div className="text-center p-4 rounded-lg bg-neutral-50">
+              <div className="text-5xl font-bold text-primary" style={{ fontSize: 'var(--font-size-3xl)' }}>
                 {profile.targetWeightKg || "—"}
               </div>
-              <div className="text-sm text-neutral-600 mt-xs">
+              <div className="text-sm text-neutral-600 mt-2">
                 Target Weight (kg)
               </div>
             </div>
@@ -113,14 +117,14 @@ export function ProfileView({ profile }: ProfileViewProps) {
       </Card>
 
       {/* Personal Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-accent" />
+      <Card className="shadow-md animate-slideUp [animation-delay:100ms]">
+        <CardHeader className="border-b border-neutral-200">
+          <CardTitle className="flex items-center gap-2" style={{ fontSize: 'var(--font-size-xl)' }}>
+            <User className="w-6 h-6 text-accent" />
             Personal Information
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -186,14 +190,14 @@ export function ProfileView({ profile }: ProfileViewProps) {
       </Card>
 
       {/* Health & Diet Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-error" />
+      <Card className="shadow-md animate-slideUp [animation-delay:200ms]">
+        <CardHeader className="border-b border-neutral-200">
+          <CardTitle className="flex items-center gap-2" style={{ fontSize: 'var(--font-size-xl)' }}>
+            <Heart className="w-6 h-6 text-error" />
             Health & Diet
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6 pt-6">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center flex-shrink-0">
               <Apple className="w-5 h-5 text-success" />
@@ -230,21 +234,25 @@ export function ProfileView({ profile }: ProfileViewProps) {
       </Card>
 
       {/* Fitness Goals */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
+      <Card className="shadow-md animate-slideUp [animation-delay:300ms] border-l-4 border-primary">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
+          <CardTitle className="flex items-center gap-2" style={{ fontSize: 'var(--font-size-xl)' }}>
+            <Target className="w-6 h-6 text-primary" />
             Fitness Goals
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Target className="w-6 h-6 text-primary" />
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-4 p-4 rounded-lg bg-gradient-to-r from-primary/10 to-transparent border border-primary/20">
+            <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <Target className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600">Primary Goal</p>
-              <p className="font-semibold text-lg">{formattedGoal}</p>
+              <p className="text-sm text-neutral-600 font-medium" style={{ fontSize: 'var(--font-size-sm)' }}>
+                Primary Goal
+              </p>
+              <p className="font-bold text-xl text-primary mt-1" style={{ fontSize: 'var(--font-size-2xl)' }}>
+                {formattedGoal}
+              </p>
             </div>
           </div>
         </CardContent>
