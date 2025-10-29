@@ -11,12 +11,13 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "seed": "pnpm --filter seeding seed"
+    "seed": "pnpm --filter seeding seed",
+    "release": "changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.11",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "turbo": "^1.12.4"
   },
   "packageManager": "pnpm@9.0.0",
