@@ -1,7 +1,6 @@
 ---
 "@healthily-fit/web": minor
 "@healthily-fit/shared": minor
-"@healthily-fit/functions": minor
 ---
 
 feat: initialize TDD fitness app with Firebase Auth, Firestore, Tailwind tokens, and CI/CD pipeline
