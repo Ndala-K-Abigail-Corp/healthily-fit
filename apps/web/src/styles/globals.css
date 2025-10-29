@@ -1,0 +1,176 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Colors - Light Mode (GymBase Green Theme) */
+    --color-primary: #00c853;
+    --color-primary-hover: #00b248;
+    --color-accent: #007e33;
+    --color-accent-hover: #00682b;
+    --color-neutral-100: #ffffff;
+    --color-neutral-200: #f4f4f4;
+    --color-neutral-300: #e0e0e0;
+    --color-neutral-600: #757575;
+    --color-neutral-700: #424242;
+    --color-neutral-800: #212121;
+    --color-neutral-900: #111111;
+    --color-success: #00c853;
+    --color-warning: #ffb300;
+    --color-error: #d32f2f;
+    --color-background-light: #f5f5f5;
+    --color-background-dark: #1b1b1b;
+
+    /* Typography - Open Sans & Montserrat */
+    --font-family-base: "Open Sans", sans-serif;
+    --font-family-heading: "Montserrat", sans-serif;
+    --font-weight-regular: 400;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 3rem;
+    --line-height-base: 1.6;
+    --line-height-heading: 1.2;
+
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+
+    /* Animations */
+    --duration-fast: 150ms;
+    --duration-medium: 300ms;
+    --duration-slow: 600ms;
+    --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+    line-height: var(--line-height-heading);
+  }
+}
+
+@layer utilities {
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #00c853 0%, #007e33 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #00c853 0%, #007e33 100%);
+  }
+}
+
+@layer components {
+  /* Animations from design tokens */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn var(--duration-medium) var(--easing-standard);
+  }
+
+  .animate-slideUp {
+    animation: slideUp var(--duration-medium) var(--easing-standard);
+  }
+
+  .animate-slideDown {
+    animation: slideDown var(--duration-fast) var(--easing-standard);
+  }
+
+  .animate-zoomIn {
+    animation: zoomIn var(--duration-medium) var(--easing-standard);
+  }
+
+  /* Transition utilities */
+  .transition-fast {
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--easing-standard);
+  }
+
+  .transition-medium {
+    transition-duration: var(--duration-medium);
+    transition-timing-function: var(--easing-standard);
+  }
+
+  .duration-fast {
+    transition-duration: var(--duration-fast);
+  }
+
+  .duration-medium {
+    transition-duration: var(--duration-medium);
+  }
+
+  .duration-slow {
+    transition-duration: var(--duration-slow);
+  }
+}
+
+

@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+playwright-report
+test-results
+
+# Production
+dist
+build
+.next
+
+# Environment
+.env
+.env*.local
+
+# Misc
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# IDEs
+.vscode
+.idea
+
+# Turbo
+.turbo
+
+# Storybook
+storybook-static
+
+# Firebase
+.firebase
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+

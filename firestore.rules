@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    /**
+     * SECURITY MODEL:
+     * - All user data is scoped under their authenticated UID
+     * - Users can only read/write their own data
+     * - Workout plans and activity logs are filtered by userId field
+     * - Exercises collection is read-only for all authenticated users
+     * - No public read/write access to prevent data leaks
+     * - All mutations require authentication
+     */
+
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Users collection - scoped to authenticated user only
+    // Path: users/{userId}
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId);
+
+      // Profile subcollection - stores user profile data
+      // Path: users/{userId}/profile/{profileId}
+      match /profile/{profileId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+    }
+
+    // Workout Plans collection - filtered by userId field
+    // Path: workoutPlans/{planId}
+    // Security: Users can only access their own workout plans
+    match /workoutPlans/{planId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Activity Logs collection - filtered by userId field
+    // Path: activityLogs/{logId}
+    // Security: Users can only access their own activity logs
+    match /activityLogs/{logId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Exercises collection - read-only for authenticated users
+    // Path: exercises/{exerciseId}
+    // Security: Global read-only exercise database, write restricted to admin SDK only
+    match /exercises/{exerciseId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only allow writes through admin SDK
+    }
+  }
+}
+
+
